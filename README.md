@@ -1,17 +1,17 @@
 # JKS Explorer
 
-A fast, lightweight, modern, and **100% client-side** Java KeyStore (`.jks`, `.keystore`, `.jceks`) and PKCS#12 (`.p12`, `.pfx`) explorer and certificate analyzer crafted with **Material 3 Expressive**.
+A fast, lightweight, modern, and **100% client-side** Java KeyStore (`.jks`, `.keystore`, `.jceks`) and PKCS#12 (`.p12`, `.pfx`) explorer and certificate analyzer styled after **Google Cloud Security Console**.
 
-![JKS Explorer](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![JKS Explorer](https://img.shields.io/badge/version-1.2.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Material 3](https://img.shields.io/badge/design-Material%203%20Expressive-cyan.svg)
 ![Security](https://img.shields.io/badge/security-100%25%20client--side-emerald.svg)
+![Google Cloud Style](https://img.shields.io/badge/style-Google%20Cloud%20Console-blue.svg)
 
 ---
 
 ## Key Features
 
-- 🎨 **Material 3 Expressive Design**: Beautiful, responsive, dark tonal surface elevation, pill-shaped expressive chips, and Google Sans typography.
+- 🛡️ **Google Cloud Security Console Interface**: Enterprise dark console design with high-density data tables, NIST algorithm assessments, and certificate lifecycle timelines.
 - 🔒 **100% Client-Side Privacy**: All parsing, hashing, and ASN.1 / X.509 decoding happen entirely inside your browser's Web Cryptography engine. Zero files or secrets are ever transmitted over the network.
 - 🗂️ **Multi-Format Keystore Support**:
   - **Java KeyStore (`.jks`, `.keystore`)**

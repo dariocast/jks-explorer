@@ -1,7 +1,7 @@
 {
   "name": "jks-explorer",
-  "version": "1.1.0",
-  "description": "Fast, secure, 100% client-side Java KeyStore (JKS) and PKCS12 (.p12/.pfx) explorer and certificate analyzer with Material 3 Expressive design",
+  "version": "1.2.0",
+  "description": "Fast, secure, 100% client-side Java KeyStore (JKS) and PKCS12 (.p12/.pfx) explorer and certificate analyzer styled after Google Cloud Security Console",
   "author": "Dario Castellano",
   "license": "MIT",
   "type": "module",
@@ -31,8 +31,8 @@
     "certificates",
     "ssl",
     "tls",
-    "material-3",
-    "material-you",
+    "google-cloud",
+    "security-console",
     "certificate-explorer"
   ],
   "dependencies": {
