@@ -1,7 +1,7 @@
 {
   "name": "jks-explorer",
-  "version": "1.3.0",
-  "description": "Fast, secure, 100% client-side Java KeyStore (JKS) and PKCS12 (.p12/.pfx) explorer and certificate analyzer built with shadcn/ui design system",
+  "version": "1.3.1",
+  "description": "Fast, secure, 100% client-side Java KeyStore (JKS) and PKCS12 (.p12/.pfx) explorer and certificate analyzer built with shadcn/ui design system with Light and Dark mode",
   "author": "Dario Castellano",
   "license": "MIT",
   "type": "module",
@@ -33,6 +33,8 @@
     "tls",
     "shadcn",
     "shadcn-ui",
+    "dark-mode",
+    "light-mode",
     "certificate-explorer"
   ],
   "dependencies": {

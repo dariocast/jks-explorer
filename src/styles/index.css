@@ -1,9 +1,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
 
 /* ==========================================================================
-   SHADCN/UI DESIGN SYSTEM (Zinc / Dark Theme)
+   SHADCN/UI DESIGN SYSTEM (Light / Dark Theme)
+   Default: Light
    ========================================================================== */
 :root {
+  /* LIGHT THEME (Default) */
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 5.9% 10%;
+
+  --radius: 0.5rem;
+
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* DARK THEME */
+.dark, [data-theme="dark"] {
   --background: 240 10% 3.9%;
   --foreground: 0 0% 98%;
 
@@ -28,20 +66,9 @@
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
 
-  --success: 142.1 70.6% 45.3%;
-  --success-foreground: 144.9 80.4% 10%;
-
-  --warning: 38 92% 50%;
-  --warning-foreground: 48 96% 89%;
-
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
   --ring: 240 4.9% 83.9%;
-
-  --radius: 0.5rem;
-
-  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 * {
@@ -60,6 +87,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   height: 100vh;
   overflow: hidden;
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
 ::selection {
@@ -222,8 +250,8 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 }
 
 .btn-icon {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2rem;
+  height: 2rem;
   padding: 0;
   border-radius: var(--radius);
 }
@@ -262,20 +290,32 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 }
 
 .badge-success {
-  background-color: rgba(34, 197, 94, 0.15);
+  background-color: rgba(34, 197, 94, 0.12);
   border-color: rgba(34, 197, 94, 0.3);
+  color: #16a34a;
+}
+
+.dark .badge-success, [data-theme="dark"] .badge-success {
   color: #4ade80;
 }
 
 .badge-warning {
-  background-color: rgba(234, 179, 8, 0.15);
+  background-color: rgba(234, 179, 8, 0.12);
   border-color: rgba(234, 179, 8, 0.3);
+  color: #ca8a04;
+}
+
+.dark .badge-warning, [data-theme="dark"] .badge-warning {
   color: #facc15;
 }
 
 .badge-destructive {
-  background-color: rgba(239, 68, 68, 0.15);
+  background-color: rgba(239, 68, 68, 0.12);
   border-color: rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+}
+
+.dark .badge-destructive, [data-theme="dark"] .badge-destructive {
   color: #f87171;
 }
 
@@ -986,7 +1026,7 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -1001,7 +1041,7 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   border-radius: var(--radius);
   width: 100%;
   max-width: 480px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 

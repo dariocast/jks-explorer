@@ -1,17 +1,19 @@
 # JKS Explorer
 
-A fast, lightweight, modern, and **100% client-side** Java KeyStore (`.jks`, `.keystore`, `.jceks`) and PKCS#12 (`.p12`, `.pfx`) explorer and certificate analyzer built with the **shadcn/ui** design system.
+A fast, lightweight, modern, and **100% client-side** Java KeyStore (`.jks`, `.keystore`, `.jceks`) and PKCS#12 (`.p12`, `.pfx`) explorer and certificate analyzer built with the **shadcn/ui** design system supporting **Light and Dark mode** (Default: Light).
 
-![JKS Explorer](https://img.shields.io/badge/version-1.3.0-white.svg)
+![JKS Explorer](https://img.shields.io/badge/version-1.3.1-black.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Style](https://img.shields.io/badge/style-shadcn%2Fui-black.svg)
+![Style](https://img.shields.io/badge/style-shadcn%2Fui-zinc.svg)
+![Theme](https://img.shields.io/badge/theme-Light%20%26%20Dark-blue.svg)
 ![Security](https://img.shields.io/badge/security-100%25%20client--side-emerald.svg)
 
 ---
 
 ## Key Features
 
-- ⚡ **shadcn/ui Design System**: Built with authentic shadcn/ui components (Cards, Tabs, Badges, Tables, Inputs, and Dialogs) on the Zinc Dark theme with Geist typography.
+- 🌓 **Light & Dark Mode**: Seamless toggling between clean Light theme (default) and Zinc Dark theme with persistent preference storage.
+- ⚡ **shadcn/ui Design System**: Built with authentic shadcn/ui components (Cards, Tabs, Badges, Tables, Inputs, and Dialogs) and Geist typography.
 - 🔒 **100% Client-Side Privacy**: All parsing, hashing, and ASN.1 / X.509 decoding happen entirely inside your browser's Web Cryptography engine. Zero files or secrets are ever transmitted over the network.
 - 🗂️ **Multi-Format Keystore Support**:
   - **Java KeyStore (`.jks`, `.keystore`)**

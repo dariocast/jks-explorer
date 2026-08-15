@@ -19,6 +19,30 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
 
+  // Theme state: Default is 'light'
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('jks-explorer-theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+    return 'light'; // Default: light
+  });
+
+  // Sync theme with HTML root
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'dark');
+    } else {
+      root.classList.remove('dark');
+      root.setAttribute('data-theme', 'light');
+    }
+    localStorage.setItem('jks-explorer-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
   // Modals state
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [pendingFile, setPendingFile] = useState<{ buffer: ArrayBuffer; name: string } | null>(null);
@@ -164,6 +188,8 @@ export const App: React.FC = () => {
     <div className="app-container">
       <Header
         hasLoadedKeystore={keystore !== null}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         onReset={handleReset}
         onOpenSample={handleLoadSample}
         onExportAllZip={keystore ? handleExportAllZip : undefined}

@@ -1,9 +1,11 @@
 import React from 'react';
-import { KeyRound, ShieldCheck, FolderOpen, RefreshCw, Archive, HelpCircle } from 'lucide-react';
+import { KeyRound, ShieldCheck, FolderOpen, RefreshCw, Archive, HelpCircle, Sun, Moon } from 'lucide-react';
 import { APP_VERSION, APP_NAME, APP_TAGLINE } from '../version';
 
 interface HeaderProps {
   hasLoadedKeystore: boolean;
+  theme: 'light' | 'dark';
+  onToggleTheme: () => void;
   onReset: () => void;
   onOpenSample: (sampleName: string) => void;
   onExportAllZip?: () => void;
@@ -12,6 +14,8 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   hasLoadedKeystore,
+  theme,
+  onToggleTheme,
   onReset,
   onOpenSample,
   onExportAllZip,
@@ -38,6 +42,16 @@ export const Header: React.FC<HeaderProps> = ({
             <ShieldCheck size={13} />
             <span>100% Client-Side</span>
           </span>
+
+          <button
+            type="button"
+            className="btn btn-ghost btn-icon"
+            onClick={onToggleTheme}
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            aria-label="Toggle theme mode"
+          >
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
 
           <button
             type="button"
