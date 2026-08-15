@@ -1,0 +1,53 @@
+{
+  "name": "jks-explorer",
+  "version": "1.0.0",
+  "description": "Fast, secure, 100% client-side Java KeyStore (JKS) and PKCS12 (.p12/.pfx) explorer and certificate analyzer",
+  "author": "Dario Castellano",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dariocast/jks-explorer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dariocast/jks-explorer/issues"
+  },
+  "homepage": "https://dariocast.github.io/jks-explorer/",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "tsx test/verify.ts",
+    "package": "npm run build"
+  },
+  "keywords": [
+    "jks",
+    "keystore",
+    "java-keystore",
+    "pkcs12",
+    "p12",
+    "pfx",
+    "x509",
+    "certificates",
+    "ssl",
+    "tls",
+    "certificate-explorer"
+  ],
+  "dependencies": {
+    "@peculiar/x509": "^1.11.0",
+    "lucide-react": "^0.468.0",
+    "node-forge": "^1.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/node-forge": "^1.3.11",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  }
+}
