@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KeystoreEntry, ParsedCertificate } from '../types/keystore';
 import {
   ShieldCheck,
@@ -26,16 +26,25 @@ import {
 
 interface CertificateDetailProps {
   entry: KeystoreEntry;
+  activeTab: TabKey;
+  onTabChange: (tab: TabKey) => void;
 }
 
-type TabKey = 'overview' | 'subject_issuer' | 'extensions' | 'chain' | 'pem';
+export type TabKey = 'overview' | 'subject_issuer' | 'extensions' | 'chain' | 'pem';
 
-export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) => {
+export const CertificateDetail: React.FC<CertificateDetailProps> = ({
+  entry,
+  activeTab,
+  onTabChange,
+}) => {
   const [selectedCertIndex, setSelectedCertIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  // Keep index within bounds if entry changed
+  // Reset cert index if entry changes
+  useEffect(() => {
+    setSelectedCertIndex(0);
+  }, [entry.alias]);
+
   const certIndex = Math.min(selectedCertIndex, Math.max(0, entry.chain.length - 1));
   const cert: ParsedCertificate | undefined = entry.chain[certIndex];
 
@@ -64,7 +73,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
         <div className="detail-header-top">
           <div className="detail-title-area">
             <h2>
-              <Key size={20} color={entry.type === 'PrivateKey' ? '#c4b5fd' : '#7dd3fc'} />
+              <Key size={18} color={entry.type === 'PrivateKey' ? '#c4b5fd' : '#7dd3fc'} />
               <span>{entry.alias}</span>
               <span className={`type-badge ${entry.type === 'PrivateKey' ? 'private-key' : 'trusted-cert'}`}>
                 {entry.type === 'PrivateKey' ? 'Private Key Entry' : 'Trusted Certificate'}
@@ -75,14 +84,14 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
             <button
               type="button"
               className="btn btn-secondary btn-sm"
               onClick={() => downloadCertificatePem(cert, `${entry.alias}-cert`)}
               title="Download certificate in PEM format"
             >
-              <Download size={14} />
+              <Download size={13} />
               <span>Download PEM</span>
             </button>
             {entry.chain.length > 1 && (
@@ -92,7 +101,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                 onClick={() => downloadCertificateChain(entry.chain, entry.alias)}
                 title="Download entire certificate chain as PEM bundle"
               >
-                <Layers size={14} />
+                <Layers size={13} />
                 <span>Download Full Chain</span>
               </button>
             )}
@@ -102,7 +111,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
         {/* Chain selector tabs if chain length > 1 */}
         {entry.chain.length > 1 && (
           <div className="chain-selector-bar">
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', paddingLeft: '0.25rem' }}>
+            <span style={{ fontSize: '0.725rem', color: 'var(--text-secondary)', paddingLeft: '0.2rem' }}>
               Chain:
             </span>
             {entry.chain.map((c, idx) => {
@@ -124,46 +133,61 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
       </div>
 
       {/* Detail Navigation Tabs */}
-      <div className="tabs-header">
+      <div className="tabs-header" role="tablist">
         <button
           type="button"
           className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
+          onClick={() => onTabChange('overview')}
+          role="tab"
+          aria-selected={activeTab === 'overview'}
         >
-          <FileText size={15} />
+          <FileText size={14} />
           <span>Overview</span>
+          <span className="tab-shortcut-kbd">1</span>
         </button>
         <button
           type="button"
           className={`tab-btn ${activeTab === 'subject_issuer' ? 'active' : ''}`}
-          onClick={() => setActiveTab('subject_issuer')}
+          onClick={() => onTabChange('subject_issuer')}
+          role="tab"
+          aria-selected={activeTab === 'subject_issuer'}
         >
-          <Globe size={15} />
+          <Globe size={14} />
           <span>Subject & Issuer</span>
+          <span className="tab-shortcut-kbd">2</span>
         </button>
         <button
           type="button"
           className={`tab-btn ${activeTab === 'extensions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('extensions')}
+          onClick={() => onTabChange('extensions')}
+          role="tab"
+          aria-selected={activeTab === 'extensions'}
         >
-          <Lock size={15} />
+          <Lock size={14} />
           <span>Extensions ({cert.extensions.length})</span>
+          <span className="tab-shortcut-kbd">3</span>
         </button>
         <button
           type="button"
           className={`tab-btn ${activeTab === 'chain' ? 'active' : ''}`}
-          onClick={() => setActiveTab('chain')}
+          onClick={() => onTabChange('chain')}
+          role="tab"
+          aria-selected={activeTab === 'chain'}
         >
-          <ListTree size={15} />
+          <ListTree size={14} />
           <span>Trust Chain ({entry.chain.length})</span>
+          <span className="tab-shortcut-kbd">4</span>
         </button>
         <button
           type="button"
           className={`tab-btn ${activeTab === 'pem' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pem')}
+          onClick={() => onTabChange('pem')}
+          role="tab"
+          aria-selected={activeTab === 'pem'}
         >
-          <FileCode2 size={15} />
+          <FileCode2 size={14} />
           <span>PEM & Raw</span>
+          <span className="tab-shortcut-kbd">5</span>
         </button>
       </div>
 
@@ -174,7 +198,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
           <>
             {/* Validity Status Banner */}
             <div
-              className={`section-card`}
+              className="section-card"
               style={{
                 borderColor:
                   cert.validityStatus === 'valid'
@@ -192,18 +216,18 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  {cert.validityStatus === 'valid' && <ShieldCheck size={26} color="#34d399" />}
-                  {cert.validityStatus === 'expiring_soon' && <AlertTriangle size={26} color="#fbbf24" />}
-                  {cert.validityStatus === 'expired' && <ShieldAlert size={26} color="#f87171" />}
-                  {cert.validityStatus === 'not_yet_valid' && <AlertTriangle size={26} color="#fbbf24" />}
+                  {cert.validityStatus === 'valid' && <ShieldCheck size={24} color="#34d399" />}
+                  {cert.validityStatus === 'expiring_soon' && <AlertTriangle size={24} color="#fbbf24" />}
+                  {cert.validityStatus === 'expired' && <ShieldAlert size={24} color="#f87171" />}
+                  {cert.validityStatus === 'not_yet_valid' && <AlertTriangle size={24} color="#fbbf24" />}
                   <div>
-                    <h4 style={{ fontSize: '1rem', fontWeight: 600, color: '#ffffff' }}>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff' }}>
                       {cert.validityStatus === 'valid' && `Certificate is Valid (${cert.daysRemaining} days remaining)`}
                       {cert.validityStatus === 'expiring_soon' && `Expiring Soon (${cert.daysRemaining} days remaining)`}
                       {cert.validityStatus === 'expired' && `Certificate has Expired (${Math.abs(cert.daysRemaining)} days ago)`}
                       {cert.validityStatus === 'not_yet_valid' && 'Certificate is Not Yet Valid'}
                     </h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                    <p style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
                       Valid from: {cert.notBefore.toUTCString()} — to: {cert.notAfter.toUTCString()}
                     </p>
                   </div>
@@ -214,7 +238,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
             {/* Subject & SANs */}
             <div className="section-card">
               <div className="section-card-title">
-                <Globe size={16} />
+                <Globe size={15} />
                 <span>Identity & Domains</span>
               </div>
               <div className="kv-grid">
@@ -229,8 +253,8 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
               </div>
 
               {cert.sans.length > 0 && (
-                <div style={{ marginTop: '1rem' }}>
-                  <span className="kv-label" style={{ display: 'block', marginBottom: '0.4rem' }}>
+                <div style={{ marginTop: '0.85rem' }}>
+                  <span className="kv-label" style={{ display: 'block', marginBottom: '0.35rem' }}>
                     Subject Alternative Names (SANs)
                   </span>
                   <div className="tag-list">
@@ -248,7 +272,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
             {/* Cryptography & Key Information */}
             <div className="section-card">
               <div className="section-card-title">
-                <Cpu size={16} />
+                <Cpu size={15} />
                 <span>Key & Signature Algorithm</span>
               </div>
               <div className="kv-grid">
@@ -280,10 +304,10 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
             {/* Thumbprints / Fingerprints */}
             <div className="section-card">
               <div className="section-card-title">
-                <Hash size={16} />
+                <Hash size={15} />
                 <span>Fingerprints & Serial Number</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                 <div className="kv-item">
                   <span className="kv-label">Serial Number (Hex)</span>
                   <div className="kv-value mono">
@@ -293,8 +317,9 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                       className="btn btn-subtle btn-sm"
                       onClick={() => handleCopy(cert.serialNumberHex, 'serial')}
                       title="Copy serial number"
+                      aria-label="Copy serial number"
                     >
-                      {copiedField === 'serial' ? <Check size={14} color="#34d399" /> : <Copy size={14} />}
+                      {copiedField === 'serial' ? <Check size={13} color="#34d399" /> : <Copy size={13} />}
                     </button>
                   </div>
                 </div>
@@ -308,8 +333,9 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                       className="btn btn-subtle btn-sm"
                       onClick={() => handleCopy(cert.fingerprints.sha256, 'sha256')}
                       title="Copy SHA-256 fingerprint"
+                      aria-label="Copy SHA-256 fingerprint"
                     >
-                      {copiedField === 'sha256' ? <Check size={14} color="#34d399" /> : <Copy size={14} />}
+                      {copiedField === 'sha256' ? <Check size={13} color="#34d399" /> : <Copy size={13} />}
                     </button>
                   </div>
                 </div>
@@ -323,8 +349,9 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                       className="btn btn-subtle btn-sm"
                       onClick={() => handleCopy(cert.fingerprints.sha1, 'sha1')}
                       title="Copy SHA-1 fingerprint"
+                      aria-label="Copy SHA-1 fingerprint"
                     >
-                      {copiedField === 'sha1' ? <Check size={14} color="#34d399" /> : <Copy size={14} />}
+                      {copiedField === 'sha1' ? <Check size={13} color="#34d399" /> : <Copy size={13} />}
                     </button>
                   </div>
                 </div>
@@ -338,10 +365,10 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
           <>
             <div className="section-card">
               <div className="section-card-title">
-                <Globe size={16} />
+                <Globe size={15} />
                 <span>Subject Distinguished Name (DN)</span>
               </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', wordBreak: 'break-all' }}>
+              <p style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', marginBottom: '0.65rem', wordBreak: 'break-all' }}>
                 <code>{cert.subject}</code>
               </p>
               <table className="detail-table">
@@ -370,10 +397,10 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
 
             <div className="section-card">
               <div className="section-card-title">
-                <Globe size={16} />
+                <Globe size={15} />
                 <span>Issuer Distinguished Name (DN)</span>
               </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', wordBreak: 'break-all' }}>
+              <p style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', marginBottom: '0.65rem', wordBreak: 'break-all' }}>
                 <code>{cert.issuer}</code>
               </p>
               <table className="detail-table">
@@ -402,21 +429,21 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
           </>
         )}
 
-        {/* EXTENSIONS TAB */}
+        {/* EXTENSIONS TAB - CATEGORIZED */}
         {activeTab === 'extensions' && (
           <div className="section-card">
             <div className="section-card-title">
-              <Lock size={16} />
+              <Lock size={15} />
               <span>Standard & Custom X.509 v3 Extensions</span>
             </div>
             {cert.extensions.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No extensions found in this certificate.</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.825rem' }}>No extensions found in this certificate.</p>
             ) : (
               <table className="detail-table">
                 <thead>
                   <tr>
                     <th style={{ width: '220px' }}>Extension Name</th>
-                    <th style={{ width: '90px' }}>Critical</th>
+                    <th style={{ width: '85px' }}>Critical</th>
                     <th>Details & Values</th>
                   </tr>
                 </thead>
@@ -425,7 +452,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                     <tr key={idx}>
                       <td>
                         <div style={{ fontWeight: 600, color: '#ffffff' }}>{ext.name}</div>
-                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                        <div style={{ fontSize: '0.675rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                           {ext.oid}
                         </div>
                       </td>
@@ -435,10 +462,10 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                             Critical
                           </span>
                         ) : (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>No</span>
+                          <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>No</span>
                         )}
                       </td>
-                      <td style={{ wordBreak: 'break-word', fontSize: '0.825rem' }}>
+                      <td style={{ wordBreak: 'break-word', fontSize: '0.8rem' }}>
                         {ext.value}
                       </td>
                     </tr>
@@ -453,7 +480,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
         {activeTab === 'chain' && (
           <div className="section-card">
             <div className="section-card-title">
-              <ListTree size={16} />
+              <ListTree size={15} />
               <span>Certificate Trust Hierarchy</span>
             </div>
             <div className="chain-flow-container">
@@ -466,19 +493,20 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                     <div
                       className={`chain-node ${isSelectedNode ? 'active-node' : ''}`}
                       onClick={() => setSelectedCertIndex(idx)}
-                      style={{ cursor: 'pointer' }}
+                      role="button"
+                      tabIndex={0}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                         <div
                           style={{
-                            width: '32px',
-                            height: '32px',
+                            width: '28px',
+                            height: '28px',
                             borderRadius: '50%',
-                            backgroundColor: isRoot ? '#064e3b' : isLeaf ? '#1e3a8a' : '#334155',
+                            backgroundColor: isRoot ? '#064e3b' : isLeaf ? '#1e3a8a' : '#374151',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '0.75rem',
+                            fontSize: '0.725rem',
                             fontWeight: 700,
                             color: '#ffffff',
                           }}
@@ -486,16 +514,16 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                           {idx + 1}
                         </div>
                         <div>
-                          <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ffffff' }}>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#ffffff' }}>
                             {c.commonName || c.subject}
                           </div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                          <div style={{ fontSize: '0.725rem', color: 'var(--text-secondary)' }}>
                             {isLeaf ? 'End Entity (Leaf)' : isRoot ? 'Root CA' : `Intermediate CA (${idx})`} • Serial: {c.serialNumberHex.slice(0, 14)}...
                           </div>
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                         <span className={`validity-tag ${c.validityStatus}`}>
                           {c.validityStatus === 'valid' ? 'Valid' : c.validityStatus === 'expiring_soon' ? 'Expiring' : 'Expired'}
                         </span>
@@ -522,8 +550,8 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
         {activeTab === 'pem' && (
           <div className="section-card">
             <div className="section-card-title" style={{ justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <FileCode2 size={16} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <FileCode2 size={15} />
                 <span>Base64 ASCII PEM Certificate</span>
               </div>
               <div className="pem-actions-bar">
@@ -532,7 +560,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                   className="btn btn-secondary btn-sm"
                   onClick={() => handleCopy(cert.pem, 'pem')}
                 >
-                  {copiedField === 'pem' ? <Check size={14} color="#34d399" /> : <Copy size={14} />}
+                  {copiedField === 'pem' ? <Check size={13} color="#34d399" /> : <Copy size={13} />}
                   <span>{copiedField === 'pem' ? 'Copied!' : 'Copy PEM'}</span>
                 </button>
                 <button
@@ -540,7 +568,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                   className="btn btn-secondary btn-sm"
                   onClick={() => downloadCertificatePem(cert, `${entry.alias}`)}
                 >
-                  <Download size={14} />
+                  <Download size={13} />
                   <span>Download .crt</span>
                 </button>
                 <button
@@ -548,7 +576,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({ entry }) =
                   className="btn btn-secondary btn-sm"
                   onClick={() => downloadCertificateDer(cert, `${entry.alias}`)}
                 >
-                  <Download size={14} />
+                  <Download size={13} />
                   <span>Download .der (Binary)</span>
                 </button>
               </div>

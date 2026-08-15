@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { KeystoreEntry } from '../types/keystore';
 import { Search, Key, Award, AlertCircle, CheckCircle2, ShieldAlert, Layers } from 'lucide-react';
 
@@ -6,6 +6,9 @@ interface EntryListProps {
   entries: KeystoreEntry[];
   selectedAlias: string | null;
   onSelectEntry: (entry: KeystoreEntry) => void;
+  searchQuery: string;
+  onSearchChange: (q: string) => void;
+  searchInputRef: React.RefObject<HTMLInputElement>;
 }
 
 type FilterType = 'all' | 'private_key' | 'trusted_cert' | 'expiring';
@@ -14,9 +17,11 @@ export const EntryList: React.FC<EntryListProps> = ({
   entries,
   selectedAlias,
   onSelectEntry,
+  searchQuery,
+  onSearchChange,
+  searchInputRef,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [activeFilter, setActiveFilter] = React.useState<FilterType>('all');
 
   const filteredEntries = useMemo(() => {
     return entries.filter((entry) => {
@@ -34,10 +39,8 @@ export const EntryList: React.FC<EntryListProps> = ({
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase();
 
-      // match alias
       if (entry.alias.toLowerCase().includes(q)) return true;
 
-      // match certificates in chain
       for (const cert of entry.chain) {
         if (cert.commonName.toLowerCase().includes(q)) return true;
         if (cert.subject.toLowerCase().includes(q)) return true;
@@ -51,18 +54,28 @@ export const EntryList: React.FC<EntryListProps> = ({
     });
   }, [entries, searchQuery, activeFilter]);
 
+  const handleKeyDown = (e: React.KeyboardEvent, entry: KeystoreEntry) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onSelectEntry(entry);
+    }
+  };
+
   return (
     <div className="sidebar-panel">
       <div className="sidebar-header">
         <div className="search-input-wrap">
-          <Search size={15} className="search-input-icon" />
+          <Search size={14} className="search-input-icon" />
           <input
+            ref={searchInputRef}
             type="text"
             className="search-input"
             placeholder="Search alias, CN, SANs, serial..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => onSearchChange(e.target.value)}
+            aria-label="Filter keystore entries"
           />
+          <span className="search-kbd-hint">/</span>
         </div>
 
         <div className="filter-pills-row">
@@ -103,7 +116,7 @@ export const EntryList: React.FC<EntryListProps> = ({
         </div>
       </div>
 
-      <div className="entry-list-scroll">
+      <div className="entry-list-scroll" role="listbox" aria-label="Keystore entries">
         {filteredEntries.length === 0 ? (
           <div className="empty-state" style={{ padding: '2rem 1rem' }}>
             <p>No entries match your search</p>
@@ -128,6 +141,10 @@ export const EntryList: React.FC<EntryListProps> = ({
                 key={entry.alias}
                 className={`entry-card ${isSelected ? 'selected' : ''}`}
                 onClick={() => onSelectEntry(entry)}
+                onKeyDown={(e) => handleKeyDown(e, entry)}
+                role="option"
+                aria-selected={isSelected}
+                tabIndex={0}
               >
                 <div className="entry-card-top">
                   <div className="entry-alias" title={entry.alias}>

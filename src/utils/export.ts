@@ -1,4 +1,5 @@
-import { ParsedCertificate } from '../types/keystore';
+import JSZip from 'jszip';
+import { ParsedCertificate, KeystoreEntry } from '../types/keystore';
 
 /**
  * Trigger browser file download
@@ -39,6 +40,33 @@ export function downloadCertificateChain(chain: ParsedCertificate[], alias: stri
   const safeName = alias.replace(/[^a-zA-Z0-9._-]/g, '_');
   const bundlePem = chain.map((c) => c.pem.trim()).join('\n\n') + '\n';
   downloadFile(bundlePem, `${safeName}-chain.pem`, 'application/x-pem-file');
+}
+
+/**
+ * Bulk exports all certificates in the keystore as a clean ZIP archive
+ */
+export async function downloadAllCertificatesZip(entries: KeystoreEntry[], keystoreName: string) {
+  const zip = new JSZip();
+  const baseName = keystoreName.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+  const certsFolder = zip.folder('certificates') || zip;
+
+  let combinedAllPem = '';
+
+  entries.forEach((entry) => {
+    const entrySlug = entry.alias.replace(/[^a-zA-Z0-9._-]/g, '_');
+    
+    entry.chain.forEach((cert, idx) => {
+      const suffix = entry.chain.length > 1 ? (idx === 0 ? '-leaf' : `-ca-${idx}`) : '';
+      const filename = `${entrySlug}${suffix}.pem`;
+      certsFolder.file(filename, cert.pem);
+      combinedAllPem += `# Alias: ${entry.alias} (Cert ${idx + 1}/${entry.chain.length})\n# Subject: ${cert.subject}\n# Issuer: ${cert.issuer}\n${cert.pem.trim()}\n\n`;
+    });
+  });
+
+  zip.file(`${baseName}-all-bundle.pem`, combinedAllPem);
+
+  const content = await zip.generateAsync({ type: 'blob' });
+  downloadFile(content, `${baseName}-exported-certs.zip`, 'application/zip');
 }
 
 /**
