@@ -9,6 +9,7 @@ import { CertificateDetail, TabKey } from './components/CertificateDetail';
 import { ShortcutsModal } from './components/ShortcutsModal';
 import { PasswordPromptModal } from './components/PasswordPromptModal';
 import { downloadAllCertificatesZip } from './utils/export';
+import { APP_NAME, APP_VERSION } from './version';
 
 export const App: React.FC = () => {
   const [keystore, setKeystore] = useState<ParsedKeystore | null>(null);
@@ -106,7 +107,6 @@ export const App: React.FC = () => {
   // Keyboard Shortcuts Listener
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if user is typing in an input
       const target = e.target as HTMLElement;
       const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
 
@@ -212,7 +212,7 @@ export const App: React.FC = () => {
 
       <footer className="app-footer">
         <div>
-          <strong>JKS Explorer v1.0.0</strong> — Pure Client-Side Java KeyStore & PKCS12 Analyzer
+          <strong>{APP_NAME} v{APP_VERSION}</strong> — Pure Client-Side Java KeyStore & PKCS12 Analyzer
         </div>
         <div>
           Press <kbd className="shortcut-kbd">?</kbd> for shortcuts • 100% Local in Browser

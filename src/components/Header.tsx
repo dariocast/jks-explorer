@@ -1,5 +1,6 @@
 import React from 'react';
 import { KeyRound, ShieldCheck, FolderOpen, RefreshCw, Archive, HelpCircle } from 'lucide-react';
+import { APP_VERSION, APP_NAME, APP_TAGLINE } from '../version';
 
 interface HeaderProps {
   hasLoadedKeystore: boolean;
@@ -21,22 +22,22 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="header-content">
         <div className="brand-section">
           <div className="brand-icon">
-            <KeyRound size={20} />
+            <KeyRound size={22} />
           </div>
           <div>
             <div className="brand-title">
-              JKS Explorer
-              <span className="version-pill">v1.0.0</span>
+              {APP_NAME}
+              <span className="version-pill">v{APP_VERSION}</span>
             </div>
             <div className="brand-subtitle">
-              Client-Side Java KeyStore & PKCS12 Certificate Explorer
+              {APP_TAGLINE}
             </div>
           </div>
         </div>
 
         <div className="header-actions">
           <div className="privacy-badge">
-            <ShieldCheck size={14} />
+            <ShieldCheck size={15} />
             <span>100% Client-Side / Zero Uploads</span>
           </div>
 
