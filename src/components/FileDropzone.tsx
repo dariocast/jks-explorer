@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
-import { UploadCloud, Lock, Eye, EyeOff, FileKey2, AlertCircle, CheckCircle2, ShieldAlert } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Upload, Eye, EyeOff, Sparkles, FileKey2 } from 'lucide-react';
 
 interface FileDropzoneProps {
   onFileSelected: (file: File, password?: string) => void;
-  onLoadSample: (sampleFileName: string, password?: string) => void;
+  onLoadSample: (sampleName: string, password?: string) => void;
   isLoading: boolean;
   errorMessage: string | null;
 }
@@ -14,11 +14,10 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
   isLoading,
   errorMessage,
 }) => {
-  const [isDragActive, setIsDragActive] = useState(false);
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragActive, setIsDragActive] = useState<boolean>(false);
+  const [keystorePassword, setKeystorePassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -33,91 +32,58 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
     e.preventDefault();
     setIsDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      setSelectedFile(file);
-      onFileSelected(file, password);
+      onFileSelected(e.dataTransfer.files[0], keystorePassword);
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setSelectedFile(file);
-      onFileSelected(file, password);
-    }
-  };
-
-  const handleSubmitWithPassword = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedFile) {
-      onFileSelected(selectedFile, password);
+      onFileSelected(e.target.files[0], keystorePassword);
     }
   };
 
   return (
-    <div className="welcome-container">
-      <div className="welcome-header">
-        <h2>Explore Java KeyStores Securely</h2>
-        <p>
-          Inspect, decode and analyze certificates, key chains, SANs, validity, and thumbprints
-          directly in your browser with zero data leaving your machine.
-        </p>
+    <div className="gcp-welcome-wrap">
+      <div className="gcp-welcome-title">
+        <h2>Keystore & Certificate Explorer</h2>
+        <p>Enterprise client-side inspection for Java KeyStores, JCEKS, PKCS#12 bundles and X.509 chains</p>
       </div>
 
       {errorMessage && (
         <div className="error-banner">
-          <AlertCircle size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
-          <div>
-            <strong>Failed to parse KeyStore:</strong> {errorMessage}
-            {errorMessage.toLowerCase().includes('password') && (
-              <div style={{ marginTop: '0.25rem', fontSize: '0.8rem' }}>
-                Tip: Enter the keystore password below and try again. Default Java keystore password is often <code>changeit</code>.
-              </div>
-            )}
-          </div>
+          <span>{errorMessage}</span>
         </div>
       )}
 
-      {/* Password configuration */}
-      <div className="password-box">
-        <form onSubmit={handleSubmitWithPassword}>
-          <div className="password-box-header">
-            <label htmlFor="keystore-password">
-              <Lock size={16} />
-              <span>Keystore Password (Optional for JKS verification, Required for protected PKCS#12)</span>
-            </label>
-          </div>
-          <div className="password-input-group">
-            <div className="password-input-wrapper">
-              <input
-                id="keystore-password"
-                type={showPassword ? 'text' : 'password'}
-                className="password-input"
-                placeholder="Enter password (e.g. changeit)"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword(!showPassword)}
-                title={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-            {selectedFile && (
-              <button type="submit" className="btn btn-primary" disabled={isLoading}>
-                {isLoading ? 'Decrypting...' : 'Re-try Parse'}
-              </button>
-            )}
-          </div>
-        </form>
+      {/* Password pre-fill */}
+      <div style={{ width: '100%', maxWidth: '420px', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+        <label style={{ fontSize: '0.725rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--gcp-text-muted)' }}>
+          Keystore Password (Optional for JKS public certificates)
+        </label>
+        <div style={{ position: 'relative', width: '100%' }}>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            className="gcp-search-input"
+            placeholder="Enter password if encrypted (e.g. changeit)"
+            value={keystorePassword}
+            onChange={(e) => setKeystorePassword(e.target.value)}
+            style={{ paddingRight: '2.5rem' }}
+          />
+          <button
+            type="button"
+            className="gcp-btn-subtle"
+            style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', padding: '0.2rem' }}
+            onClick={() => setShowPassword(!showPassword)}
+            title={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+          </button>
+        </div>
       </div>
 
-      {/* Dropzone Box */}
+      {/* Dropzone */}
       <div
-        className={`dropzone-box ${isDragActive ? 'drag-active' : ''}`}
+        className={`gcp-dropzone ${isDragActive ? 'active' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -126,88 +92,69 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".jks,.keystore,.ks,.jceks,.p12,.pfx,.cer,.crt,.pem"
+          accept=".jks,.keystore,.ks,.p12,.pfx,.jceks,.cer,.crt,.pem"
           style={{ display: 'none' }}
-          onChange={handleFileChange}
+          onChange={handleInputChange}
         />
-        <div className="dropzone-icon-wrap">
-          <UploadCloud size={32} />
+
+        <div className="gcp-dropzone-icon">
+          {isLoading ? <Upload size={24} className="animate-spin" /> : <FileKey2 size={24} />}
         </div>
-        <h3>{selectedFile ? selectedFile.name : 'Drop your KeyStore file here'}</h3>
-        <p>
-          or <span style={{ color: 'var(--accent-text)', textDecoration: 'underline' }}>click to browse</span> from your computer
-        </p>
-        <div className="supported-formats-pills">
-          <span className="format-pill">.jks</span>
-          <span className="format-pill">.keystore</span>
-          <span className="format-pill">.p12</span>
-          <span className="format-pill">.pfx</span>
-          <span className="format-pill">.jceks</span>
-          <span className="format-pill">.cer / .crt</span>
+
+        <h3>{isLoading ? 'Parsing and validating keystore...' : 'Drop keystore file or click to browse'}</h3>
+        <p>Zero network transfer — all decryption and X.509 parsing execute locally</p>
+
+        <div className="gcp-format-tags">
+          <span className="gcp-tag">.JKS</span>
+          <span className="gcp-tag">.P12 / .PFX</span>
+          <span className="gcp-tag">.JCEKS</span>
+          <span className="gcp-tag">.KEYSTORE</span>
+          <span className="gcp-tag">.CRT / .PEM</span>
         </div>
       </div>
 
-      {/* Instant Demo Samples */}
-      <div className="quick-samples">
-        <div className="quick-samples-title">
-          <FileKey2 size={16} />
-          <span>Or Test With Pre-Loaded Sample Keystores (Password: <code>changeit</code>)</span>
+      {/* Demo Samples */}
+      <div className="gcp-samples-panel">
+        <div className="gcp-samples-label">
+          <Sparkles size={13} />
+          <span>Quick Load Test Fixtures</span>
         </div>
-        <div className="samples-grid">
+
+        <div className="gcp-samples-grid">
           <button
             type="button"
-            className="sample-card-btn"
-            onClick={() => onLoadSample('pure-sun-jks.jks', 'changeit')}
+            className="gcp-sample-card"
+            onClick={() => onLoadSample('pure-sun-jks.jks', keystorePassword || 'changeit')}
           >
-            <div className="sample-card-name">
-              <span>Pure Sun JKS</span>
-              <CheckCircle2 size={15} color="#34d399" />
-            </div>
-            <div className="sample-card-desc">
-              Native binary Sun JKS (0xfeedfeed) keystore format
-            </div>
+            <div className="gcp-sample-card-title">Pure Sun JKS (JKS v2)</div>
+            <div className="gcp-sample-card-desc">Standard Java KeyStore with SHA-1 integrity digest (Pass: changeit)</div>
           </button>
 
           <button
             type="button"
-            className="sample-card-btn"
-            onClick={() => onLoadSample('sample-keystore.jks', 'changeit')}
+            className="gcp-sample-card"
+            onClick={() => onLoadSample('sample-keystore.jks', keystorePassword || 'changeit')}
           >
-            <div className="sample-card-name">
-              <span>Multi-Entry Keystore</span>
-              <CheckCircle2 size={15} color="#34d399" />
-            </div>
-            <div className="sample-card-desc">
-              RSA 2048/4096 + ECC P-256 keys, Root CA, SANs, Web Server EKU
-            </div>
+            <div className="gcp-sample-card-title">PKCS#12 JKS (Modern Java)</div>
+            <div className="gcp-sample-card-desc">Java 9+ default PKCS#12 bundle with 3 keys and certificates</div>
           </button>
 
           <button
             type="button"
-            className="sample-card-btn"
-            onClick={() => onLoadSample('sample-pkcs12.p12', 'changeit')}
+            className="gcp-sample-card"
+            onClick={() => onLoadSample('sample-pkcs12.p12', keystorePassword || 'changeit')}
           >
-            <div className="sample-card-name">
-              <span>PKCS#12 (.p12)</span>
-              <CheckCircle2 size={15} color="#60a5fa" />
-            </div>
-            <div className="sample-card-desc">
-              P12/PFX modern bundle with multiple aliases and cert chains
-            </div>
+            <div className="gcp-sample-card-title">Direct PKCS#12 (.p12)</div>
+            <div className="gcp-sample-card-desc">Standard PKCS#12 archive with server certificates and SANs</div>
           </button>
 
           <button
             type="button"
-            className="sample-card-btn"
-            onClick={() => onLoadSample('expired-sample.jks', 'changeit')}
+            className="gcp-sample-card"
+            onClick={() => onLoadSample('expired-sample.jks', keystorePassword || 'changeit')}
           >
-            <div className="sample-card-name">
-              <span>Expired Cert Demo</span>
-              <ShieldAlert size={15} color="#f87171" />
-            </div>
-            <div className="sample-card-desc">
-              Keystore with expired certificate for testing validity warnings
-            </div>
+            <div className="gcp-sample-card-title">Expired Certificate Sample</div>
+            <div className="gcp-sample-card-desc">Demonstrates certificate expiration warning indicators</div>
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { KeystoreEntry } from '../types/keystore';
-import { Search, Key, Award, AlertCircle, CheckCircle2, ShieldAlert, Layers } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 interface EntryListProps {
   entries: KeystoreEntry[];
@@ -11,7 +11,7 @@ interface EntryListProps {
   searchInputRef: React.RefObject<HTMLInputElement>;
 }
 
-type FilterType = 'all' | 'private_key' | 'trusted_cert' | 'expiring';
+type FilterType = 'all' | 'private_key' | 'trusted_cert' | 'issues';
 
 export const EntryList: React.FC<EntryListProps> = ({
   entries,
@@ -25,20 +25,19 @@ export const EntryList: React.FC<EntryListProps> = ({
 
   const filteredEntries = useMemo(() => {
     return entries.filter((entry) => {
-      // 1. Type Filter
+      // Filter Type
       if (activeFilter === 'private_key' && entry.type !== 'PrivateKey') return false;
       if (activeFilter === 'trusted_cert' && entry.type !== 'TrustedCertificate') return false;
-      if (activeFilter === 'expiring') {
-        const hasExpiringOrExpired = entry.chain.some(
+      if (activeFilter === 'issues') {
+        const hasIssue = entry.chain.some(
           (c) => c.validityStatus === 'expired' || c.validityStatus === 'expiring_soon'
         );
-        if (!hasExpiringOrExpired) return false;
+        if (!hasIssue) return false;
       }
 
-      // 2. Search Query
+      // Search Query
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase();
-
       if (entry.alias.toLowerCase().includes(q)) return true;
 
       for (const cert of entry.chain) {
@@ -62,48 +61,47 @@ export const EntryList: React.FC<EntryListProps> = ({
   };
 
   return (
-    <div className="sidebar-panel">
-      <div className="sidebar-header">
-        <div className="search-input-wrap">
-          <Search size={14} className="search-input-icon" />
+    <div className="gcp-sidebar">
+      <div className="gcp-sidebar-top">
+        <div className="gcp-search-wrap">
+          <Search size={13} className="gcp-search-icon" />
           <input
             ref={searchInputRef}
             type="text"
-            className="search-input"
-            placeholder="Search alias, CN, SANs, serial..."
+            className="gcp-search-input"
+            placeholder="Filter entries (/ or Cmd+K)..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             aria-label="Filter keystore entries"
           />
-          <span className="search-kbd-hint">/</span>
         </div>
 
-        <div className="filter-pills-row">
+        <div className="gcp-filter-tabs">
           <button
             type="button"
-            className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
+            className={`gcp-filter-tab ${activeFilter === 'all' ? 'active' : ''}`}
             onClick={() => setActiveFilter('all')}
           >
             All ({entries.length})
           </button>
           <button
             type="button"
-            className={`filter-btn ${activeFilter === 'private_key' ? 'active' : ''}`}
+            className={`gcp-filter-tab ${activeFilter === 'private_key' ? 'active' : ''}`}
             onClick={() => setActiveFilter('private_key')}
           >
             Keys ({entries.filter((e) => e.type === 'PrivateKey').length})
           </button>
           <button
             type="button"
-            className={`filter-btn ${activeFilter === 'trusted_cert' ? 'active' : ''}`}
+            className={`gcp-filter-tab ${activeFilter === 'trusted_cert' ? 'active' : ''}`}
             onClick={() => setActiveFilter('trusted_cert')}
           >
             Certs ({entries.filter((e) => e.type === 'TrustedCertificate').length})
           </button>
           <button
             type="button"
-            className={`filter-btn ${activeFilter === 'expiring' ? 'active' : ''}`}
-            onClick={() => setActiveFilter('expiring')}
+            className={`gcp-filter-tab ${activeFilter === 'issues' ? 'active' : ''}`}
+            onClick={() => setActiveFilter('issues')}
           >
             Issues (
             {
@@ -116,10 +114,10 @@ export const EntryList: React.FC<EntryListProps> = ({
         </div>
       </div>
 
-      <div className="entry-list-scroll" role="listbox" aria-label="Keystore entries">
+      <div className="gcp-entry-scroll" role="listbox" aria-label="Keystore entries">
         {filteredEntries.length === 0 ? (
-          <div className="empty-state" style={{ padding: '2rem 1rem' }}>
-            <p>No entries match your search</p>
+          <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--gcp-text-muted)', fontSize: '0.8rem' }}>
+            No entries match your search
           </div>
         ) : (
           filteredEntries.map((entry) => {
@@ -128,8 +126,8 @@ export const EntryList: React.FC<EntryListProps> = ({
             const keyAlgo = primaryCert?.publicKey?.algorithm || 'Key';
             const bitLength = primaryCert?.publicKey?.bitLength;
             const curve = primaryCert?.publicKey?.curve;
-            const keyLabel = bitLength ? `${keyAlgo} ${bitLength}` : curve ? `${keyAlgo} (${curve})` : keyAlgo;
-            
+            const keyLabel = bitLength ? `${keyAlgo}-${bitLength}` : curve ? `${keyAlgo} (${curve})` : keyAlgo;
+
             const worstValidity = entry.chain.reduce((prev, curr) => {
               if (curr.validityStatus === 'expired') return 'expired';
               if (curr.validityStatus === 'expiring_soon' && prev !== 'expired') return 'expiring_soon';
@@ -139,42 +137,48 @@ export const EntryList: React.FC<EntryListProps> = ({
             return (
               <div
                 key={entry.alias}
-                className={`entry-card ${isSelected ? 'selected' : ''}`}
+                className={`gcp-entry-row ${isSelected ? 'selected' : ''}`}
                 onClick={() => onSelectEntry(entry)}
                 onKeyDown={(e) => handleKeyDown(e, entry)}
                 role="option"
                 aria-selected={isSelected}
                 tabIndex={0}
               >
-                <div className="entry-card-top">
-                  <div className="entry-alias" title={entry.alias}>
+                <div className="gcp-entry-title-row">
+                  <span className="gcp-entry-alias" title={entry.alias}>
                     {entry.alias}
-                  </div>
+                  </span>
                   {entry.chain.length > 1 && (
-                    <span className="format-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                      <Layers size={10} />
+                    <span className="gcp-tag" style={{ fontSize: '0.65rem', padding: '0.05rem 0.35rem' }}>
                       {entry.chain.length} certs
                     </span>
                   )}
                 </div>
 
-                <div className="entry-card-cn" title={primaryCert?.commonName || entry.alias}>
-                  {primaryCert?.commonName || 'No certificate payload'}
+                <div className="gcp-entry-cn" title={primaryCert?.commonName || entry.alias}>
+                  {primaryCert?.commonName || 'No Certificate Payload'}
                 </div>
 
-                <div className="entry-card-meta">
-                  <span className={`type-badge ${entry.type === 'PrivateKey' ? 'private-key' : 'trusted-cert'}`}>
-                    {entry.type === 'PrivateKey' ? <Key size={11} /> : <Award size={11} />}
-                    <span>{keyLabel}</span>
+                <div className="gcp-entry-meta">
+                  <span style={{ fontSize: '0.7rem', color: 'var(--gcp-text-muted)', fontFamily: 'var(--gcp-font-mono)' }}>
+                    {keyLabel}
                   </span>
 
                   {primaryCert && (
-                    <span className={`validity-tag ${worstValidity}`}>
-                      {worstValidity === 'valid' && <CheckCircle2 size={11} />}
-                      {worstValidity === 'expiring_soon' && <AlertCircle size={11} />}
-                      {worstValidity === 'expired' && <ShieldAlert size={11} />}
+                    <span
+                      style={{
+                        fontSize: '0.675rem',
+                        fontWeight: 600,
+                        color:
+                          worstValidity === 'valid'
+                            ? 'var(--gcp-green)'
+                            : worstValidity === 'expiring_soon'
+                            ? 'var(--gcp-yellow)'
+                            : 'var(--gcp-red)',
+                      }}
+                    >
                       {worstValidity === 'valid'
-                        ? `${primaryCert.daysRemaining}d left`
+                        ? `${primaryCert.daysRemaining}d`
                         : worstValidity === 'expiring_soon'
                         ? `Expiring (${primaryCert.daysRemaining}d)`
                         : 'Expired'}

@@ -170,7 +170,7 @@ export const App: React.FC = () => {
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
-      <main className="main-content">
+      <main className="gcp-main-layout">
         {!keystore ? (
           <FileDropzone
             onFileSelected={handleFileSelected}
@@ -182,7 +182,7 @@ export const App: React.FC = () => {
           <>
             <KeystoreSummary keystore={keystore} />
 
-            <div className="explorer-grid">
+            <div className="gcp-workbench-grid">
               <EntryList
                 entries={keystore.entries}
                 selectedAlias={selectedEntry?.alias || null}
@@ -199,9 +199,9 @@ export const App: React.FC = () => {
                   onTabChange={setActiveTab}
                 />
               ) : (
-                <div className="detail-panel">
-                  <div className="empty-state">
-                    <p>Select an entry from the list to inspect certificate details.</p>
+                <div className="gcp-detail-workspace">
+                  <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--gcp-text-muted)' }}>
+                    Select an entry from the left pane to inspect certificate properties.
                   </div>
                 </div>
               )}
@@ -210,12 +210,12 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      <footer className="app-footer">
+      <footer className="gcp-footer">
         <div>
-          <strong>{APP_NAME} v{APP_VERSION}</strong> — Pure Client-Side Java KeyStore & PKCS12 Analyzer
+          <strong>{APP_NAME}</strong> v{APP_VERSION} — Client-Side Security Console
         </div>
         <div>
-          Press <kbd className="shortcut-kbd">?</kbd> for shortcuts • 100% Local in Browser
+          Keyboard shortcuts: <span className="gcp-tag">?</span> • 100% Client-Side Engine
         </div>
       </footer>
 
