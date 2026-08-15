@@ -61,46 +61,47 @@ export const EntryList: React.FC<EntryListProps> = ({
   };
 
   return (
-    <div className="gcp-sidebar">
-      <div className="gcp-sidebar-top">
-        <div className="gcp-search-wrap">
-          <Search size={13} className="gcp-search-icon" />
+    <div className="sidebar-panel">
+      <div className="sidebar-header">
+        <div className="search-input-wrap">
+          <Search size={14} className="search-input-icon" />
           <input
             ref={searchInputRef}
             type="text"
-            className="gcp-search-input"
-            placeholder="Filter entries (/ or Cmd+K)..."
+            className="search-input"
+            placeholder="Search entries... (/ or Cmd+K)"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            aria-label="Filter keystore entries"
+            aria-label="Search keystore entries"
           />
+          <span className="search-kbd-hint">/</span>
         </div>
 
-        <div className="gcp-filter-tabs">
+        <div className="filter-pills-row">
           <button
             type="button"
-            className={`gcp-filter-tab ${activeFilter === 'all' ? 'active' : ''}`}
+            className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
             onClick={() => setActiveFilter('all')}
           >
             All ({entries.length})
           </button>
           <button
             type="button"
-            className={`gcp-filter-tab ${activeFilter === 'private_key' ? 'active' : ''}`}
+            className={`filter-btn ${activeFilter === 'private_key' ? 'active' : ''}`}
             onClick={() => setActiveFilter('private_key')}
           >
             Keys ({entries.filter((e) => e.type === 'PrivateKey').length})
           </button>
           <button
             type="button"
-            className={`gcp-filter-tab ${activeFilter === 'trusted_cert' ? 'active' : ''}`}
+            className={`filter-btn ${activeFilter === 'trusted_cert' ? 'active' : ''}`}
             onClick={() => setActiveFilter('trusted_cert')}
           >
             Certs ({entries.filter((e) => e.type === 'TrustedCertificate').length})
           </button>
           <button
             type="button"
-            className={`gcp-filter-tab ${activeFilter === 'issues' ? 'active' : ''}`}
+            className={`filter-btn ${activeFilter === 'issues' ? 'active' : ''}`}
             onClick={() => setActiveFilter('issues')}
           >
             Issues (
@@ -114,10 +115,10 @@ export const EntryList: React.FC<EntryListProps> = ({
         </div>
       </div>
 
-      <div className="gcp-entry-scroll" role="listbox" aria-label="Keystore entries">
+      <div className="entry-list-scroll" role="listbox" aria-label="Keystore entries">
         {filteredEntries.length === 0 ? (
-          <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--gcp-text-muted)', fontSize: '0.8rem' }}>
-            No entries match your search
+          <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'hsl(var(--muted-foreground))', fontSize: '0.8125rem' }}>
+            No matching entries found
           </div>
         ) : (
           filteredEntries.map((entry) => {
@@ -137,45 +138,43 @@ export const EntryList: React.FC<EntryListProps> = ({
             return (
               <div
                 key={entry.alias}
-                className={`gcp-entry-row ${isSelected ? 'selected' : ''}`}
+                className={`entry-card ${isSelected ? 'selected' : ''}`}
                 onClick={() => onSelectEntry(entry)}
                 onKeyDown={(e) => handleKeyDown(e, entry)}
                 role="option"
                 aria-selected={isSelected}
                 tabIndex={0}
               >
-                <div className="gcp-entry-title-row">
-                  <span className="gcp-entry-alias" title={entry.alias}>
+                <div className="entry-card-top">
+                  <span className="entry-alias" title={entry.alias}>
                     {entry.alias}
                   </span>
                   {entry.chain.length > 1 && (
-                    <span className="gcp-tag" style={{ fontSize: '0.65rem', padding: '0.05rem 0.35rem' }}>
+                    <span className="badge badge-outline" style={{ fontSize: '0.625rem', padding: '0.0625rem 0.375rem' }}>
                       {entry.chain.length} certs
                     </span>
                   )}
                 </div>
 
-                <div className="gcp-entry-cn" title={primaryCert?.commonName || entry.alias}>
-                  {primaryCert?.commonName || 'No Certificate Payload'}
+                <div className="entry-card-cn" title={primaryCert?.commonName || entry.alias}>
+                  {primaryCert?.commonName || 'No Certificate Data'}
                 </div>
 
-                <div className="gcp-entry-meta">
-                  <span style={{ fontSize: '0.7rem', color: 'var(--gcp-text-muted)', fontFamily: 'var(--gcp-font-mono)' }}>
+                <div className="entry-card-meta">
+                  <span style={{ fontFamily: 'var(--font-mono)', color: 'hsl(var(--muted-foreground))' }}>
                     {keyLabel}
                   </span>
 
                   {primaryCert && (
                     <span
-                      style={{
-                        fontSize: '0.675rem',
-                        fontWeight: 600,
-                        color:
-                          worstValidity === 'valid'
-                            ? 'var(--gcp-green)'
-                            : worstValidity === 'expiring_soon'
-                            ? 'var(--gcp-yellow)'
-                            : 'var(--gcp-red)',
-                      }}
+                      className={`badge ${
+                        worstValidity === 'valid'
+                          ? 'badge-success'
+                          : worstValidity === 'expiring_soon'
+                          ? 'badge-warning'
+                          : 'badge-destructive'
+                      }`}
+                      style={{ fontSize: '0.625rem', padding: '0.0625rem 0.375rem' }}
                     >
                       {worstValidity === 'valid'
                         ? `${primaryCert.daysRemaining}d`

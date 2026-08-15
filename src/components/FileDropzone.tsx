@@ -43,36 +43,34 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
   };
 
   return (
-    <div className="gcp-welcome-wrap">
-      <div className="gcp-welcome-title">
+    <div className="welcome-container">
+      <div className="welcome-header">
         <h2>Keystore & Certificate Explorer</h2>
-        <p>Enterprise client-side inspection for Java KeyStores, JCEKS, PKCS#12 bundles and X.509 chains</p>
+        <p>100% client-side tool to inspect Java KeyStores, JCEKS, PKCS#12 archives and X.509 certificate chains</p>
       </div>
 
       {errorMessage && (
-        <div className="error-banner">
+        <div className="badge badge-destructive" style={{ padding: '0.625rem 1rem', width: '100%', borderRadius: 'var(--radius)', fontSize: '0.8125rem' }}>
           <span>{errorMessage}</span>
         </div>
       )}
 
-      {/* Password pre-fill */}
-      <div style={{ width: '100%', maxWidth: '420px', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-        <label style={{ fontSize: '0.725rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--gcp-text-muted)' }}>
-          Keystore Password (Optional for JKS public certificates)
+      {/* Password input */}
+      <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+        <label style={{ fontSize: '0.75rem', fontWeight: 500, color: 'hsl(var(--muted-foreground))' }}>
+          Keystore Password (Optional for JKS public certs)
         </label>
-        <div style={{ position: 'relative', width: '100%' }}>
+        <div className="password-input-wrapper">
           <input
             type={showPassword ? 'text' : 'password'}
-            className="gcp-search-input"
-            placeholder="Enter password if encrypted (e.g. changeit)"
+            className="search-input"
+            placeholder="Enter password if required (e.g. changeit)"
             value={keystorePassword}
             onChange={(e) => setKeystorePassword(e.target.value)}
-            style={{ paddingRight: '2.5rem' }}
           />
           <button
             type="button"
-            className="gcp-btn-subtle"
-            style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', padding: '0.2rem' }}
+            className="password-toggle-btn"
             onClick={() => setShowPassword(!showPassword)}
             title={showPassword ? 'Hide password' : 'Show password'}
           >
@@ -81,9 +79,9 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
         </div>
       </div>
 
-      {/* Dropzone */}
+      {/* Dropzone Card */}
       <div
-        className={`gcp-dropzone ${isDragActive ? 'active' : ''}`}
+        className={`dropzone-card ${isDragActive ? 'drag-active' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -97,64 +95,64 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
           onChange={handleInputChange}
         />
 
-        <div className="gcp-dropzone-icon">
-          {isLoading ? <Upload size={24} className="animate-spin" /> : <FileKey2 size={24} />}
+        <div className="dropzone-icon-wrap">
+          {isLoading ? <Upload size={22} className="animate-spin" /> : <FileKey2 size={22} />}
         </div>
 
-        <h3>{isLoading ? 'Parsing and validating keystore...' : 'Drop keystore file or click to browse'}</h3>
-        <p>Zero network transfer — all decryption and X.509 parsing execute locally</p>
+        <h3>{isLoading ? 'Parsing keystore payload...' : 'Drop your keystore here or click to browse'}</h3>
+        <p>Zero network requests — all decryption and ASN.1 parsing occur locally in your browser</p>
 
-        <div className="gcp-format-tags">
-          <span className="gcp-tag">.JKS</span>
-          <span className="gcp-tag">.P12 / .PFX</span>
-          <span className="gcp-tag">.JCEKS</span>
-          <span className="gcp-tag">.KEYSTORE</span>
-          <span className="gcp-tag">.CRT / .PEM</span>
+        <div className="supported-formats-pills">
+          <span className="badge badge-secondary">.JKS</span>
+          <span className="badge badge-secondary">.P12 / .PFX</span>
+          <span className="badge badge-secondary">.JCEKS</span>
+          <span className="badge badge-secondary">.KEYSTORE</span>
+          <span className="badge badge-secondary">.CRT / .PEM</span>
         </div>
       </div>
 
-      {/* Demo Samples */}
-      <div className="gcp-samples-panel">
-        <div className="gcp-samples-label">
+      {/* Quick Samples Card */}
+      <div className="quick-samples">
+        <div className="quick-samples-title">
           <Sparkles size={13} />
-          <span>Quick Load Test Fixtures</span>
+          <span>Pre-loaded Test Fixtures</span>
         </div>
 
-        <div className="gcp-samples-grid">
+        <div className="samples-grid">
           <button
             type="button"
-            className="gcp-sample-card"
+            className="sample-card-btn"
             onClick={() => onLoadSample('pure-sun-jks.jks', keystorePassword || 'changeit')}
           >
-            <div className="gcp-sample-card-title">Pure Sun JKS (JKS v2)</div>
-            <div className="gcp-sample-card-desc">Standard Java KeyStore with SHA-1 integrity digest (Pass: changeit)</div>
+            <div className="sample-card-name">Pure Sun JKS</div>
+            <div className="sample-card-desc">Sun JKS v2 format with SHA-1 digest (Pass: changeit)</div>
           </button>
 
           <button
             type="button"
-            className="gcp-sample-card"
+            className="sample-card-btn"
             onClick={() => onLoadSample('sample-keystore.jks', keystorePassword || 'changeit')}
           >
-            <div className="gcp-sample-card-title">PKCS#12 JKS (Modern Java)</div>
-            <div className="gcp-sample-card-desc">Java 9+ default PKCS#12 bundle with 3 keys and certificates</div>
+            <div className="sample-card-name">PKCS#12 JKS</div>
+            <div className="sample-card-desc">Java 9+ default PKCS#12 keystore with 3 certificate entries</div>
           </button>
 
           <button
             type="button"
-            className="gcp-sample-card"
+            className="sample-card-btn"
             onClick={() => onLoadSample('sample-pkcs12.p12', keystorePassword || 'changeit')}
           >
-            <div className="gcp-sample-card-title">Direct PKCS#12 (.p12)</div>
-            <div className="gcp-sample-card-desc">Standard PKCS#12 archive with server certificates and SANs</div>
+            <div className="sample-card-name">Direct .p12 Archive</div>
+            <div className="sample-card-desc">Standard PKCS#12 bundle with SANs and key chain</div>
           </button>
 
           <button
             type="button"
-            className="gcp-sample-card"
+            className="sample-card-btn"
             onClick={() => onLoadSample('expired-sample.jks', keystorePassword || 'changeit')}
           >
-            <div className="gcp-sample-card-title">Expired Certificate Sample</div>
-            <div className="gcp-sample-card-desc">Demonstrates certificate expiration warning indicators</div>
+            <div className="sample-card-name">Expired Cert Sample</div>
+            <div className="sample-card-desc">Sample with expired certificate for testing alert states</div>
           </button>
         </div>
       </div>

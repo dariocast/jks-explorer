@@ -19,47 +19,49 @@ export const KeystoreSummary: React.FC<KeystoreSummaryProps> = ({ keystore }) =>
   ).length;
 
   return (
-    <div className="gcp-summary-bar">
-      <div className="gcp-summary-left">
-        <div className="gcp-summary-icon">
+    <div className="keystore-banner">
+      <div className="keystore-file-info">
+        <div className="keystore-file-icon">
           <HardDrive size={18} />
         </div>
         <div>
-          <div className="gcp-summary-filename">
-            <span>{keystore.fileName}</span>
-            <span className="gcp-tag">{keystore.type}</span>
+          <div className="keystore-file-details">
+            <h3>
+              <span>{keystore.fileName}</span>
+              <span className="badge badge-outline">{keystore.type}</span>
+            </h3>
           </div>
-          <div className="gcp-summary-meta">
-            {keystore.entries.length} total entries • Integrity: {keystore.integrityVerified ? 'Verified (SHA-1 Digest)' : 'Direct ASN.1'}
+          <div className="keystore-meta-row">
+            {keystore.entries.length} entries • Integrity: {keystore.integrityVerified ? 'Verified (SHA-1 Digest)' : 'Direct ASN.1'}
           </div>
         </div>
       </div>
 
-      <div className="gcp-summary-stats">
-        <span className="gcp-chip badge-standard">
+      <div className="keystore-stats-row">
+        <span className="badge badge-secondary">
           <Key size={12} />
-          <span>{privateKeyCount} Private Keys</span>
+          <span>{privateKeyCount} Keys</span>
         </span>
 
-        <span className="gcp-chip badge-standard">
+        <span className="badge badge-secondary">
           <Award size={12} />
-          <span>{trustedCertCount} Trusted Certs</span>
+          <span>{trustedCertCount} Certs</span>
         </span>
 
         {expiredCount > 0 ? (
-          <span className="gcp-chip badge-weak">
+          <span className="badge badge-destructive">
             <ShieldAlert size={12} />
             <span>{expiredCount} Expired</span>
           </span>
         ) : expiringSoonCount > 0 ? (
-          <span className="gcp-chip badge-weak" style={{ color: 'var(--gcp-yellow)', borderColor: 'var(--gcp-yellow-border)' }}>
+          <span className="badge badge-warning">
             <AlertTriangle size={12} />
             <span>{expiringSoonCount} Expiring Soon</span>
           </span>
         ) : (
-          <span className="gcp-chip badge-strong">
+          <span className="badge badge-success">
             <ShieldCheck size={12} />
-            <span>All Certificates Valid</span>
+            <span>All Valid</span>
           </span>
         )}
       </div>

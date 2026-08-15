@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, FolderOpen, RefreshCw, Archive, HelpCircle, HardDrive } from 'lucide-react';
+import { KeyRound, ShieldCheck, FolderOpen, RefreshCw, Archive, HelpCircle } from 'lucide-react';
 import { APP_VERSION, APP_NAME, APP_TAGLINE } from '../version';
 
 interface HeaderProps {
@@ -18,70 +18,73 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenShortcuts,
 }) => {
   return (
-    <header className="gcp-header">
-      <div className="gcp-brand-group">
-        <div className="gcp-brand-logo">
-          <HardDrive size={18} />
-        </div>
-        <div className="gcp-brand-text">
-          <div className="gcp-brand-title">
-            <span>{APP_NAME}</span>
-            <span className="gcp-version-tag">v{APP_VERSION}</span>
+    <header className="shadcn-header">
+      <div className="header-content">
+        <div className="brand-section">
+          <div className="brand-icon">
+            <KeyRound size={18} />
           </div>
-          <div className="gcp-brand-sub">{APP_TAGLINE}</div>
+          <div>
+            <div className="brand-title">
+              <span>{APP_NAME}</span>
+              <span className="badge badge-secondary">v{APP_VERSION}</span>
+            </div>
+            <div className="brand-subtitle">{APP_TAGLINE}</div>
+          </div>
         </div>
-      </div>
 
-      <div className="gcp-header-controls">
-        <div className="gcp-env-chip">
-          <Shield size={13} />
-          <span>Client-Side Isolated Environment</span>
-        </div>
+        <div className="header-actions">
+          <span className="badge badge-success" style={{ gap: '0.35rem', padding: '0.25rem 0.65rem' }}>
+            <ShieldCheck size={13} />
+            <span>100% Client-Side</span>
+          </span>
 
-        <button
-          type="button"
-          className="gcp-btn gcp-btn-secondary gcp-btn-sm"
-          onClick={onOpenShortcuts}
-          title="Keyboard shortcuts (?)"
-        >
-          <HelpCircle size={13} />
-          <span>Shortcuts</span>
-        </button>
-
-        {hasLoadedKeystore ? (
-          <>
-            {onExportAllZip && (
-              <button
-                type="button"
-                className="gcp-btn gcp-btn-secondary gcp-btn-sm"
-                onClick={onExportAllZip}
-                title="Export all certificates as a ZIP archive"
-              >
-                <Archive size={13} />
-                <span>Export Keystore (ZIP)</span>
-              </button>
-            )}
-            <button
-              type="button"
-              className="gcp-btn gcp-btn-secondary gcp-btn-sm"
-              onClick={onReset}
-              title="Close current keystore and open another"
-            >
-              <FolderOpen size={13} />
-              <span>Open File</span>
-            </button>
-          </>
-        ) : (
           <button
             type="button"
-            className="gcp-btn gcp-btn-secondary gcp-btn-sm"
-            onClick={() => onOpenSample('pure-sun-jks.jks')}
-            title="Load demo Sun JKS keystore"
+            className="btn btn-ghost btn-sm"
+            onClick={onOpenShortcuts}
+            title="Keyboard shortcuts (?)"
+            aria-label="Open keyboard shortcuts"
           >
-            <RefreshCw size={13} />
-            <span>Load Demo Keystore</span>
+            <HelpCircle size={14} />
+            <span>Shortcuts</span>
           </button>
-        )}
+
+          {hasLoadedKeystore ? (
+            <>
+              {onExportAllZip && (
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  onClick={onExportAllZip}
+                  title="Export all certificates as a ZIP archive"
+                >
+                  <Archive size={14} />
+                  <span>Export All (ZIP)</span>
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={onReset}
+                title="Close current keystore and open another"
+              >
+                <FolderOpen size={14} />
+                <span>Open Keystore</span>
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={() => onOpenSample('pure-sun-jks.jks')}
+              title="Load demo Sun JKS keystore"
+            >
+              <RefreshCw size={14} />
+              <span>Load Demo JKS</span>
+            </button>
+          )}
+        </div>
       </div>
     </header>
   );

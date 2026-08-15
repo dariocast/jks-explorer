@@ -3,28 +3,39 @@
 <!-- impeccable:design-schema 1 -->
 
 ## Visual World
-**Google Cloud Security Console (Material 3 Precision)** — An enterprise cryptographic workbench inspired by Google Cloud KMS and security consoles. It replaces generic template clichés with high-density data tables, NIST cryptographic security posture ratings, an interactive certificate lifecycle timeline bar, and genuine Google Cloud dark surface tokens.
+**shadcn/ui (Zinc / Dark Modern)** — An ultra-clean, modern, minimalist developer interface built on the authentic `shadcn/ui` component architecture. Features subtle border micro-interactions (`hsl(var(--border))`), zinc-dark tonal surfaces (`hsl(240 10% 3.9%)`), Geist typography, pill tabs, rounded-md cards, and crisp semantic badges.
 
-## Color System
-- **Surfaces**:
-  - Background: `#12151c`
-  - Card & Panels: `#181c26`
-  - Hover Surface: `#1e2330`
-  - Active Surface: `#252c3c`
-  - Borders: `#283042` / Subtle: `#202737`
-- **Google Cloud Accents**:
-  - Blue (Primary): `#8ab4f8` / Container: `rgba(138, 180, 248, 0.12)`
-  - Green (Security / Strong / Valid): `#81c995` / Container: `rgba(129, 201, 149, 0.12)`
-  - Yellow (Warning / Expiring): `#fdd663` / Container: `rgba(253, 214, 99, 0.12)`
-  - Red (Deprecated / Expired / Error): `#f28b82` / Container: `rgba(242, 139, 130, 0.14)`
-  - Purple (Private Keys): `#c58af9` / Container: `rgba(197, 138, 249, 0.12)`
+## Color System (HSL)
+- `background`: `hsl(240 10% 3.9%)` (#09090b)
+- `foreground`: `hsl(0 0% 98%)` (#fafafa)
+- `card`: `hsl(240 10% 3.9%)`
+- `card-foreground`: `hsl(0 0% 98%)`
+- `popover`: `hsl(240 10% 3.9%)`
+- `popover-foreground`: `hsl(0 0% 98%)`
+- `primary`: `hsl(0 0% 98%)`
+- `primary-foreground`: `hsl(240 5.9% 10%)`
+- `secondary`: `hsl(240 3.7% 15.9%)`
+- `secondary-foreground`: `hsl(0 0% 98%)`
+- `muted`: `hsl(240 3.7% 15.9%)`
+- `muted-foreground`: `hsl(240 5% 64.9%)`
+- `accent`: `hsl(240 3.7% 15.9%)`
+- `accent-foreground`: `hsl(0 0% 98%)`
+- `destructive`: `hsl(0 62.8% 30.6%)`
+- `destructive-foreground`: `hsl(0 0% 98%)`
+- `border`: `hsl(240 3.7% 15.9%)`
+- `input`: `hsl(240 3.7% 15.9%)`
+- `ring`: `hsl(240 4.9% 83.9%)`
+- `radius`: `0.5rem` (8px)
 
 ## Typography
-- **Primary Interface**: `Plus Jakarta Sans` / `Google Sans` (700 / 600 weight, tight tracking)
-- **Data & Hashes**: `JetBrains Mono` (400 / 500 / 600 weight)
+- **Primary Interface**: `Geist`, `Inter`, sans-serif (weights: 400, 500, 600, 700 with `-0.02em` tracking)
+- **Monospace & Hashes**: `Geist Mono`, `JetBrains Mono`, monospace (weights: 400, 500, 600)
 
-## Layout & Components
-1. **Console Top App Bar**: Compact header with brand logo, client-side environment badge, and quick action buttons.
-2. **Cryptographic Posture & Audit Card**: NIST algorithm strength assessment, deprecation warnings, and interactive validity timeline bar.
-3. **Enterprise Key-Value Tables**: Clean, high-contrast 2-column tables with monospace values and single-click copy buttons.
-4. **Interactive Certificate Chain**: Visual tree hierarchy from Root CA down to Leaf node.
+## Component Library
+1. **Navbar & Header**: Blurred translucent top bar (`bg-background/95 backdrop-blur`) with version Badge, status pill, and outline action buttons.
+2. **Cards (`.card`)**: 1px subtle zinc border with crisp rounded corners, structured `.card-header`, `.card-title`, and `.card-content`.
+3. **Buttons (`.btn`)**: Variants for `default`, `secondary`, `outline`, `ghost`, and `destructive`.
+4. **Badges (`.badge`)**: Compact pill badges (`default`, `secondary`, `outline`, `success`, `warning`, `destructive`).
+5. **Tabs**: Pill tab triggers with active white bottom borders and subtle hover states.
+6. **Data Tables (`.shadcn-table`)**: Minimalist table headers with subtle row hover effects.
+7. **Modals & Dialogs**: Clean modal overlay with blurred backdrop, rounded-lg dialog content, and footer actions.

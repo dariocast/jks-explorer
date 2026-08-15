@@ -54,8 +54,8 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({
 
   if (!cert) {
     return (
-      <div className="gcp-detail-workspace">
-        <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--gcp-text-muted)' }}>
+      <div className="detail-panel">
+        <div style={{ padding: '3rem', textAlign: 'center', color: 'hsl(var(--muted-foreground))' }}>
           No certificate payload available for this entry.
         </div>
       </div>
@@ -63,100 +63,102 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({
   }
 
   return (
-    <div className="gcp-detail-workspace">
+    <div className="detail-panel">
       {/* Top Header */}
-      <div className="gcp-detail-top">
-        <div className="gcp-detail-title-group">
-          <h2>
-            <Key size={16} color={entry.type === 'PrivateKey' ? 'var(--gcp-purple)' : 'var(--gcp-blue)'} />
-            <span>{entry.alias}</span>
-            <span className="gcp-tag">{entry.type === 'PrivateKey' ? 'Private Key' : 'Trusted Cert'}</span>
-          </h2>
-          <p>
-            Entry Created: {entry.creationDate.toISOString().replace('T', ' ').slice(0, 19)} UTC
-          </p>
-        </div>
+      <div className="detail-header">
+        <div className="detail-header-top">
+          <div className="detail-title-area">
+            <h2>
+              <Key size={16} />
+              <span>{entry.alias}</span>
+              <span className="badge badge-secondary">{entry.type === 'PrivateKey' ? 'Private Key' : 'Trusted Cert'}</span>
+            </h2>
+            <p>
+              Created: {entry.creationDate.toISOString().replace('T', ' ').slice(0, 19)} UTC
+            </p>
+          </div>
 
-        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            className="gcp-btn gcp-btn-secondary gcp-btn-sm"
-            onClick={() => downloadCertificatePem(cert, `${entry.alias}-cert`)}
-            title="Download PEM certificate"
-          >
-            <Download size={12} />
-            <span>Download PEM</span>
-          </button>
-          {entry.chain.length > 1 && (
+          <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
             <button
               type="button"
-              className="gcp-btn gcp-btn-secondary gcp-btn-sm"
-              onClick={() => downloadCertificateChain(entry.chain, entry.alias)}
-              title="Download full certificate chain"
+              className="btn btn-outline btn-sm"
+              onClick={() => downloadCertificatePem(cert, `${entry.alias}-cert`)}
+              title="Download PEM certificate"
             >
-              <Layers size={12} />
-              <span>Full Chain (PEM)</span>
+              <Download size={13} />
+              <span>Download PEM</span>
             </button>
-          )}
+            {entry.chain.length > 1 && (
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={() => downloadCertificateChain(entry.chain, entry.alias)}
+                title="Download full certificate chain"
+              >
+                <Layers size={13} />
+                <span>Full Chain</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="gcp-tab-bar" role="tablist">
+      {/* shadcn Tabs Header */}
+      <div className="tabs-header" role="tablist">
         <button
           type="button"
-          className={`gcp-tab-item ${activeTab === 'overview' ? 'active' : ''}`}
+          className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => onTabChange('overview')}
           role="tab"
         >
           <FileText size={13} />
           <span>Security & Overview</span>
-          <span className="gcp-tab-badge">1</span>
+          <span className="tab-shortcut-kbd">1</span>
         </button>
         <button
           type="button"
-          className={`gcp-tab-item ${activeTab === 'subject_issuer' ? 'active' : ''}`}
+          className={`tab-btn ${activeTab === 'subject_issuer' ? 'active' : ''}`}
           onClick={() => onTabChange('subject_issuer')}
           role="tab"
         >
           <Globe size={13} />
           <span>Subject & Issuer</span>
-          <span className="gcp-tab-badge">2</span>
+          <span className="tab-shortcut-kbd">2</span>
         </button>
         <button
           type="button"
-          className={`gcp-tab-item ${activeTab === 'extensions' ? 'active' : ''}`}
+          className={`tab-btn ${activeTab === 'extensions' ? 'active' : ''}`}
           onClick={() => onTabChange('extensions')}
           role="tab"
         >
           <Lock size={13} />
-          <span>X.509 Extensions ({cert.extensions.length})</span>
-          <span className="gcp-tab-badge">3</span>
+          <span>Extensions ({cert.extensions.length})</span>
+          <span className="tab-shortcut-kbd">3</span>
         </button>
         <button
           type="button"
-          className={`gcp-tab-item ${activeTab === 'chain' ? 'active' : ''}`}
+          className={`tab-btn ${activeTab === 'chain' ? 'active' : ''}`}
           onClick={() => onTabChange('chain')}
           role="tab"
         >
           <ListTree size={13} />
           <span>Trust Hierarchy ({entry.chain.length})</span>
-          <span className="gcp-tab-badge">4</span>
+          <span className="tab-shortcut-kbd">4</span>
         </button>
         <button
           type="button"
-          className={`gcp-tab-item ${activeTab === 'pem' ? 'active' : ''}`}
+          className={`tab-btn ${activeTab === 'pem' ? 'active' : ''}`}
           onClick={() => onTabChange('pem')}
           role="tab"
         >
           <FileCode2 size={13} />
           <span>Raw PEM</span>
-          <span className="gcp-tab-badge">5</span>
+          <span className="tab-shortcut-kbd">5</span>
         </button>
       </div>
 
-      {/* Content */}
-      <div className="gcp-detail-scroll">
+      {/* Tab Content */}
+      <div className="tab-content-scroll">
         {/* OVERVIEW */}
         {activeTab === 'overview' && (
           <>
@@ -164,97 +166,104 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({
             <SecurityAuditCard cert={cert} />
 
             {/* General Properties Table */}
-            <div className="gcp-section-card">
-              <div className="gcp-section-card-title">
-                <Shield size={14} />
-                <span>Certificate Identity & Subject Information</span>
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">
+                  <Shield size={14} />
+                  <span>Certificate Properties & Fingerprints</span>
+                </div>
               </div>
-              <table className="gcp-table">
-                <tbody>
-                  <tr>
-                    <td style={{ width: '180px', color: 'var(--gcp-text-muted)', fontWeight: 600 }}>Common Name (CN)</td>
-                    <td style={{ fontWeight: 700, color: '#ffffff' }}>{cert.commonName}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ color: 'var(--gcp-text-muted)', fontWeight: 600 }}>Issuer Common Name</td>
-                    <td>{cert.issuerCommonName}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ color: 'var(--gcp-text-muted)', fontWeight: 600 }}>Subject Alternative Names</td>
-                    <td>
-                      {cert.sans.length > 0 ? (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                          {cert.sans.map((s, idx) => (
-                            <span key={idx} className="gcp-tag" style={{ fontSize: '0.7rem' }}>
-                              {s.type}: {s.value}
-                            </span>
-                          ))}
+              <div className="table-container">
+                <table className="shadcn-table">
+                  <tbody>
+                    <tr>
+                      <td style={{ width: '180px', color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>Common Name (CN)</td>
+                      <td style={{ fontWeight: 600 }}>{cert.commonName}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>Issuer</td>
+                      <td>{cert.issuerCommonName}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>Subject Alternative Names</td>
+                      <td>
+                        {cert.sans.length > 0 ? (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                            {cert.sans.map((s, idx) => (
+                              <span key={idx} className="badge badge-secondary" style={{ fontFamily: 'var(--font-mono)' }}>
+                                {s.type}: {s.value}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span style={{ color: 'hsl(var(--muted-foreground))' }}>None defined</span>
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>Key Specification</td>
+                      <td style={{ fontFamily: 'var(--font-mono)' }}>
+                        {cert.publicKey.algorithm} {cert.publicKey.bitLength ? `${cert.publicKey.bitLength}-bit` : ''} {cert.publicKey.curve ? `(Curve: ${cert.publicKey.curve})` : ''}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>Signature Algorithm</td>
+                      <td style={{ fontFamily: 'var(--font-mono)' }}>{cert.signatureAlgorithm}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>Serial Number (Hex)</td>
+                      <td>
+                        <div className="copy-row">
+                          <span>{cert.serialNumberHex}</span>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-icon"
+                            style={{ width: '20px', height: '20px' }}
+                            onClick={() => handleCopy(cert.serialNumberHex, 'serial')}
+                            title="Copy Serial Number"
+                          >
+                            {copiedField === 'serial' ? <Check size={12} color="#22c55e" /> : <Copy size={12} />}
+                          </button>
                         </div>
-                      ) : (
-                        <span style={{ color: 'var(--gcp-text-muted)' }}>None defined</span>
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ color: 'var(--gcp-text-muted)', fontWeight: 600 }}>Key Specification</td>
-                    <td className="gcp-mono-cell">
-                      {cert.publicKey.algorithm} {cert.publicKey.bitLength ? `${cert.publicKey.bitLength}-bit` : ''} {cert.publicKey.curve ? `(Curve: ${cert.publicKey.curve})` : ''}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ color: 'var(--gcp-text-muted)', fontWeight: 600 }}>Signature Algorithm</td>
-                    <td className="gcp-mono-cell">{cert.signatureAlgorithm}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ color: 'var(--gcp-text-muted)', fontWeight: 600 }}>Serial Number (Hex)</td>
-                    <td>
-                      <div className="gcp-copy-wrap">
-                        <span>{cert.serialNumberHex}</span>
-                        <button
-                          type="button"
-                          className="gcp-btn-subtle"
-                          onClick={() => handleCopy(cert.serialNumberHex, 'serial')}
-                          title="Copy Serial Number"
-                        >
-                          {copiedField === 'serial' ? <Check size={12} color="var(--gcp-green)" /> : <Copy size={12} />}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ color: 'var(--gcp-text-muted)', fontWeight: 600 }}>SHA-256 Fingerprint</td>
-                    <td>
-                      <div className="gcp-copy-wrap">
-                        <span>{cert.fingerprints.sha256}</span>
-                        <button
-                          type="button"
-                          className="gcp-btn-subtle"
-                          onClick={() => handleCopy(cert.fingerprints.sha256, 'sha256')}
-                          title="Copy SHA-256 Fingerprint"
-                        >
-                          {copiedField === 'sha256' ? <Check size={12} color="var(--gcp-green)" /> : <Copy size={12} />}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ color: 'var(--gcp-text-muted)', fontWeight: 600 }}>SHA-1 Fingerprint</td>
-                    <td>
-                      <div className="gcp-copy-wrap">
-                        <span>{cert.fingerprints.sha1}</span>
-                        <button
-                          type="button"
-                          className="gcp-btn-subtle"
-                          onClick={() => handleCopy(cert.fingerprints.sha1, 'sha1')}
-                          title="Copy SHA-1 Fingerprint"
-                        >
-                          {copiedField === 'sha1' ? <Check size={12} color="var(--gcp-green)" /> : <Copy size={12} />}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>SHA-256 Fingerprint</td>
+                      <td>
+                        <div className="copy-row">
+                          <span>{cert.fingerprints.sha256}</span>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-icon"
+                            style={{ width: '20px', height: '20px' }}
+                            onClick={() => handleCopy(cert.fingerprints.sha256, 'sha256')}
+                            title="Copy SHA-256 Fingerprint"
+                          >
+                            {copiedField === 'sha256' ? <Check size={12} color="#22c55e" /> : <Copy size={12} />}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>SHA-1 Fingerprint</td>
+                      <td>
+                        <div className="copy-row">
+                          <span>{cert.fingerprints.sha1}</span>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-icon"
+                            style={{ width: '20px', height: '20px' }}
+                            onClick={() => handleCopy(cert.fingerprints.sha1, 'sha1')}
+                            title="Copy SHA-1 Fingerprint"
+                          >
+                            {copiedField === 'sha1' ? <Check size={12} color="#22c55e" /> : <Copy size={12} />}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </>
         )}
@@ -262,109 +271,121 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({
         {/* SUBJECT & ISSUER */}
         {activeTab === 'subject_issuer' && (
           <>
-            <div className="gcp-section-card">
-              <div className="gcp-section-card-title">
-                <Globe size={14} />
-                <span>Subject Distinguished Name (DN)</span>
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">
+                  <Globe size={14} />
+                  <span>Subject Distinguished Name (DN)</span>
+                </div>
+                <p style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'hsl(var(--muted-foreground))', wordBreak: 'break-all' }}>
+                  {cert.subject}
+                </p>
               </div>
-              <p style={{ fontSize: '0.75rem', fontFamily: 'var(--gcp-font-mono)', color: 'var(--gcp-blue)', marginBottom: '0.65rem', wordBreak: 'break-all' }}>
-                {cert.subject}
-              </p>
-              <table className="gcp-table">
-                <thead>
-                  <tr>
-                    <th style={{ width: '140px' }}>Attribute</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(cert.subjectAttributes).map(([k, v]) => (
-                    <tr key={k}>
-                      <td style={{ fontWeight: 600, color: 'var(--gcp-text-muted)' }}>{k}</td>
-                      <td>{v}</td>
+              <div className="table-container">
+                <table className="shadcn-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '140px' }}>Attribute</th>
+                      <th>Value</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {Object.entries(cert.subjectAttributes).map(([k, v]) => (
+                      <tr key={k}>
+                        <td style={{ fontWeight: 600, color: 'hsl(var(--muted-foreground))' }}>{k}</td>
+                        <td>{v}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            <div className="gcp-section-card">
-              <div className="gcp-section-card-title">
-                <Globe size={14} />
-                <span>Issuer Distinguished Name (DN)</span>
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">
+                  <Globe size={14} />
+                  <span>Issuer Distinguished Name (DN)</span>
+                </div>
+                <p style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'hsl(var(--muted-foreground))', wordBreak: 'break-all' }}>
+                  {cert.issuer}
+                </p>
               </div>
-              <p style={{ fontSize: '0.75rem', fontFamily: 'var(--gcp-font-mono)', color: 'var(--gcp-blue)', marginBottom: '0.65rem', wordBreak: 'break-all' }}>
-                {cert.issuer}
-              </p>
-              <table className="gcp-table">
-                <thead>
-                  <tr>
-                    <th style={{ width: '140px' }}>Attribute</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(cert.issuerAttributes).map(([k, v]) => (
-                    <tr key={k}>
-                      <td style={{ fontWeight: 600, color: 'var(--gcp-text-muted)' }}>{k}</td>
-                      <td>{v}</td>
+              <div className="table-container">
+                <table className="shadcn-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '140px' }}>Attribute</th>
+                      <th>Value</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {Object.entries(cert.issuerAttributes).map(([k, v]) => (
+                      <tr key={k}>
+                        <td style={{ fontWeight: 600, color: 'hsl(var(--muted-foreground))' }}>{k}</td>
+                        <td>{v}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </>
         )}
 
         {/* EXTENSIONS */}
         {activeTab === 'extensions' && (
-          <div className="gcp-section-card">
-            <div className="gcp-section-card-title">
-              <Lock size={14} />
-              <span>Standard & Custom X.509 Extensions</span>
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">
+                <Lock size={14} />
+                <span>X.509 v3 Extensions</span>
+              </div>
             </div>
-            <table className="gcp-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '220px' }}>Extension</th>
-                  <th style={{ width: '80px' }}>Critical</th>
-                  <th>Value / Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cert.extensions.map((ext, idx) => (
-                  <tr key={idx}>
-                    <td>
-                      <div style={{ fontWeight: 600, color: '#ffffff' }}>{ext.name}</div>
-                      <div style={{ fontSize: '0.675rem', color: 'var(--gcp-text-muted)', fontFamily: 'var(--gcp-font-mono)' }}>
-                        {ext.oid}
-                      </div>
-                    </td>
-                    <td>
-                      {ext.critical ? (
-                        <span className="gcp-tag" style={{ color: 'var(--gcp-red)', borderColor: 'var(--gcp-red-border)' }}>
-                          Critical
-                        </span>
-                      ) : (
-                        <span style={{ fontSize: '0.725rem', color: 'var(--gcp-text-muted)' }}>No</span>
-                      )}
-                    </td>
-                    <td style={{ wordBreak: 'break-word', fontSize: '0.775rem' }}>{ext.value}</td>
+            <div className="table-container">
+              <table className="shadcn-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '200px' }}>Extension</th>
+                    <th style={{ width: '80px' }}>Critical</th>
+                    <th>Value / Description</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {cert.extensions.map((ext, idx) => (
+                    <tr key={idx}>
+                      <td>
+                        <div style={{ fontWeight: 600 }}>{ext.name}</div>
+                        <div style={{ fontSize: '0.6875rem', color: 'hsl(var(--muted-foreground))', fontFamily: 'var(--font-mono)' }}>
+                          {ext.oid}
+                        </div>
+                      </td>
+                      <td>
+                        {ext.critical ? (
+                          <span className="badge badge-destructive">Critical</span>
+                        ) : (
+                          <span style={{ color: 'hsl(var(--muted-foreground))', fontSize: '0.75rem' }}>No</span>
+                        )}
+                      </td>
+                      <td style={{ wordBreak: 'break-word', fontSize: '0.75rem' }}>{ext.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         {/* CHAIN */}
         {activeTab === 'chain' && (
-          <div className="gcp-section-card">
-            <div className="gcp-section-card-title">
-              <ListTree size={14} />
-              <span>Certificate Trust Chain Hierarchy</span>
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">
+                <ListTree size={14} />
+                <span>Certificate Trust Chain Hierarchy</span>
+              </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            <div className="card-content" style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
               {entry.chain.map((c, idx) => {
                 const isRoot = idx === entry.chain.length - 1;
                 const isLeaf = idx === 0;
@@ -375,9 +396,9 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({
                     key={idx}
                     onClick={() => setSelectedCertIndex(idx)}
                     style={{
-                      backgroundColor: isSelected ? '#1e283b' : 'var(--gcp-surface-card)',
-                      border: `1px solid ${isSelected ? 'var(--gcp-blue)' : 'var(--gcp-surface-border)'}`,
-                      borderRadius: 'var(--radius-sm)',
+                      backgroundColor: isSelected ? 'hsl(var(--muted))' : 'transparent',
+                      border: `1px solid ${isSelected ? 'hsl(var(--foreground))' : 'hsl(var(--border))'}`,
+                      borderRadius: 'var(--radius)',
                       padding: '0.75rem 1rem',
                       display: 'flex',
                       alignItems: 'center',
@@ -390,11 +411,11 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({
                         style={{
                           width: '24px',
                           height: '24px',
-                          borderRadius: 'var(--radius-xs)',
-                          backgroundColor: isRoot ? '#0f3823' : isLeaf ? '#122e4d' : '#222938',
-                          color: isRoot ? 'var(--gcp-green)' : isLeaf ? 'var(--gcp-blue)' : 'var(--gcp-text-secondary)',
-                          fontSize: '0.7rem',
-                          fontWeight: 700,
+                          borderRadius: 'var(--radius)',
+                          backgroundColor: isRoot ? 'rgba(34, 197, 94, 0.2)' : isLeaf ? 'hsl(var(--muted))' : 'hsl(var(--muted))',
+                          color: isRoot ? '#4ade80' : 'hsl(var(--foreground))',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -403,20 +424,17 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({
                         {idx + 1}
                       </div>
                       <div>
-                        <div style={{ fontWeight: 700, color: '#ffffff', fontSize: '0.85rem' }}>
+                        <div style={{ fontWeight: 600, fontSize: '0.8125rem' }}>
                           {c.commonName || c.subject}
                         </div>
-                        <div style={{ fontSize: '0.725rem', color: 'var(--gcp-text-secondary)' }}>
+                        <div style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))' }}>
                           {isLeaf ? 'End-Entity Leaf' : isRoot ? 'Root CA' : `Intermediate CA (${idx})`} • Serial: {c.serialNumberHex.slice(0, 16)}...
                         </div>
                       </div>
                     </div>
 
                     <span
-                      className="gcp-chip"
-                      style={{
-                        color: c.validityStatus === 'valid' ? 'var(--gcp-green)' : 'var(--gcp-red)',
-                      }}
+                      className={`badge ${c.validityStatus === 'valid' ? 'badge-success' : 'badge-destructive'}`}
                     >
                       {c.validityStatus === 'valid' ? `${c.daysRemaining}d valid` : 'Expired'}
                     </span>
@@ -429,24 +447,24 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({
 
         {/* PEM */}
         {activeTab === 'pem' && (
-          <div className="gcp-section-card">
-            <div className="gcp-section-card-title" style={{ justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+          <div className="card">
+            <div className="card-header" style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="card-title">
                 <FileCode2 size={14} />
-                <span>Base64 Encoded PEM Format</span>
+                <span>Base64 ASCII PEM Format</span>
               </div>
-              <div style={{ display: 'flex', gap: '0.35rem' }}>
+              <div style={{ display: 'flex', gap: '0.375rem' }}>
                 <button
                   type="button"
-                  className="gcp-btn gcp-btn-secondary gcp-btn-sm"
+                  className="btn btn-outline btn-sm"
                   onClick={() => handleCopy(cert.pem, 'pem')}
                 >
-                  {copiedField === 'pem' ? <Check size={12} color="var(--gcp-green)" /> : <Copy size={12} />}
+                  {copiedField === 'pem' ? <Check size={12} color="#22c55e" /> : <Copy size={12} />}
                   <span>{copiedField === 'pem' ? 'Copied!' : 'Copy PEM'}</span>
                 </button>
                 <button
                   type="button"
-                  className="gcp-btn gcp-btn-secondary gcp-btn-sm"
+                  className="btn btn-outline btn-sm"
                   onClick={() => downloadCertificatePem(cert, `${entry.alias}`)}
                 >
                   <Download size={12} />
@@ -454,7 +472,7 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({
                 </button>
                 <button
                   type="button"
-                  className="gcp-btn gcp-btn-secondary gcp-btn-sm"
+                  className="btn btn-outline btn-sm"
                   onClick={() => downloadCertificateDer(cert, `${entry.alias}`)}
                 >
                   <Download size={12} />
@@ -463,21 +481,23 @@ export const CertificateDetail: React.FC<CertificateDetailProps> = ({
               </div>
             </div>
 
-            <pre
-              style={{
-                backgroundColor: 'var(--gcp-surface-card)',
-                border: '1px solid var(--gcp-surface-border)',
-                borderRadius: 'var(--radius-xs)',
-                padding: '0.85rem',
-                fontFamily: 'var(--gcp-font-mono)',
-                fontSize: '0.725rem',
-                lineHeight: 1.45,
-                color: '#c3e7ff',
-                overflowX: 'auto',
-              }}
-            >
-              {cert.pem}
-            </pre>
+            <div className="card-content">
+              <pre
+                style={{
+                  backgroundColor: 'hsl(var(--muted) / 0.3)',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: 'var(--radius)',
+                  padding: '0.875rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.75rem',
+                  lineHeight: 1.45,
+                  color: 'hsl(var(--foreground))',
+                  overflowX: 'auto',
+                }}
+              >
+                {cert.pem}
+              </pre>
+            </div>
           </div>
         )}
       </div>

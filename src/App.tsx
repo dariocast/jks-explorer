@@ -170,7 +170,7 @@ export const App: React.FC = () => {
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
-      <main className="gcp-main-layout">
+      <main className="main-content">
         {!keystore ? (
           <FileDropzone
             onFileSelected={handleFileSelected}
@@ -182,7 +182,7 @@ export const App: React.FC = () => {
           <>
             <KeystoreSummary keystore={keystore} />
 
-            <div className="gcp-workbench-grid">
+            <div className="explorer-grid">
               <EntryList
                 entries={keystore.entries}
                 selectedAlias={selectedEntry?.alias || null}
@@ -199,9 +199,9 @@ export const App: React.FC = () => {
                   onTabChange={setActiveTab}
                 />
               ) : (
-                <div className="gcp-detail-workspace">
-                  <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--gcp-text-muted)' }}>
-                    Select an entry from the left pane to inspect certificate properties.
+                <div className="detail-panel">
+                  <div style={{ padding: '3rem', textAlign: 'center', color: 'hsl(var(--muted-foreground))' }}>
+                    Select an entry from the list to inspect certificate details.
                   </div>
                 </div>
               )}
@@ -210,12 +210,12 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      <footer className="gcp-footer">
+      <footer className="shadcn-footer">
         <div>
-          <strong>{APP_NAME}</strong> v{APP_VERSION} — Client-Side Security Console
+          <strong>{APP_NAME}</strong> <span className="badge badge-outline">v{APP_VERSION}</span> — Pure Client-Side Java KeyStore Analyzer
         </div>
         <div>
-          Keyboard shortcuts: <span className="gcp-tag">?</span> • 100% Client-Side Engine
+          Press <kbd style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', backgroundColor: 'hsl(var(--muted))', padding: '0.125rem 0.375rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))' }}>?</kbd> for shortcuts • 100% In-Browser Cryptography
         </div>
       </footer>
 

@@ -15,125 +15,127 @@ export const SecurityAuditCard: React.FC<SecurityAuditProps> = ({ cert }) => {
 
   // 2. Algorithm Assessment (NIST Guidelines)
   let keyStrengthLabel = 'Modern & Secure';
-  let keyStrengthClass = 'badge-strong';
-  let keyStrengthDesc = 'Meets modern NIST SP 800-57 security requirements.';
+  let keyStrengthBadge = 'badge-success';
+  let keyStrengthDesc = 'Meets modern NIST SP 800-57 security guidelines.';
 
   if (cert.publicKey.algorithm === 'RSA' || cert.publicKey.algorithm.includes('RSA')) {
     const bits = cert.publicKey.bitLength || 2048;
     if (bits < 2048) {
-      keyStrengthLabel = 'Weak / Deprecated (<2048 bits)';
-      keyStrengthClass = 'badge-weak';
+      keyStrengthLabel = 'Weak (<2048 bits)';
+      keyStrengthBadge = 'badge-destructive';
       keyStrengthDesc = 'RSA keys under 2048 bits are vulnerable to factorization attacks.';
     } else if (bits === 2048) {
-      keyStrengthLabel = 'Standard 2048-bit RSA';
-      keyStrengthClass = 'badge-standard';
+      keyStrengthLabel = 'Standard RSA 2048';
+      keyStrengthBadge = 'badge-secondary';
       keyStrengthDesc = 'Approved for standard commercial security through 2030.';
     } else {
-      keyStrengthLabel = `High Security RSA (${bits}-bit)`;
-      keyStrengthClass = 'badge-strong';
+      keyStrengthLabel = `High Security RSA ${bits}`;
+      keyStrengthBadge = 'badge-success';
       keyStrengthDesc = 'High security margin suitable for long-term root/CA trust.';
     }
   } else if (cert.publicKey.algorithm.includes('EC') || cert.publicKey.curve) {
-    keyStrengthLabel = `Elliptic Curve (${cert.publicKey.curve || 'ECC'})`;
-    keyStrengthClass = 'badge-strong';
+    keyStrengthLabel = `ECC (${cert.publicKey.curve || 'Elliptic Curve'})`;
+    keyStrengthBadge = 'badge-success';
     keyStrengthDesc = 'High security per bit with modern forward secrecy performance.';
   }
 
   // 3. Signature Algorithm Assessment
-  let sigStrengthClass = 'badge-strong';
+  let sigStrengthBadge = 'badge-success';
   if (cert.signatureAlgorithm.toLowerCase().includes('md5') || cert.signatureAlgorithm.toLowerCase().includes('sha1')) {
-    sigStrengthClass = 'badge-weak';
+    sigStrengthBadge = 'badge-destructive';
   }
 
   return (
-    <div className="gcp-audit-card">
-      <div className="gcp-audit-header">
-        <div className="gcp-audit-title">
-          <ShieldCheck size={16} color="var(--gcp-blue)" />
-          <span>Cryptographic Posture & Security Assessment</span>
+    <div className="audit-card">
+      <div className="audit-header">
+        <div className="audit-title">
+          <ShieldCheck size={16} />
+          <span>Cryptographic Security & Posture Assessment</span>
         </div>
-        <span className={`gcp-chip ${keyStrengthClass}`}>{keyStrengthLabel}</span>
+        <span className={`badge ${keyStrengthBadge}`}>{keyStrengthLabel}</span>
       </div>
 
       {/* Validity Timeline Bar */}
-      <div className="gcp-timeline-box">
-        <div className="gcp-timeline-labels">
-          <span className="gcp-label-dim">
+      <div className="timeline-box">
+        <div className="timeline-labels">
+          <span style={{ color: 'hsl(var(--muted-foreground))', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <Clock size={12} /> Issued: {cert.notBefore.toISOString().split('T')[0]}
           </span>
-          <span className="gcp-timeline-metric">
+          <span style={{ fontWeight: 600, color: 'hsl(var(--foreground))' }}>
             {cert.validityStatus === 'valid'
-              ? `${cert.daysRemaining} days remaining (${100 - elapsedPercent}% left)`
+              ? `${cert.daysRemaining} days left (${100 - elapsedPercent}% remaining)`
               : cert.validityStatus === 'expired'
               ? `Expired ${Math.abs(cert.daysRemaining)} days ago`
               : 'Not yet active'}
           </span>
-          <span className="gcp-label-dim">
+          <span style={{ color: 'hsl(var(--muted-foreground))' }}>
             Expires: {cert.notAfter.toISOString().split('T')[0]}
           </span>
         </div>
 
-        <div className="gcp-progress-track">
+        <div className="progress-track">
           <div
-            className={`gcp-progress-fill ${
-              cert.validityStatus === 'expired'
-                ? 'progress-expired'
-                : cert.validityStatus === 'expiring_soon'
-                ? 'progress-warning'
-                : 'progress-valid'
-            }`}
-            style={{ width: `${cert.validityStatus === 'expired' ? 100 : elapsedPercent}%` }}
+            className="progress-fill"
+            style={{
+              width: `${cert.validityStatus === 'expired' ? 100 : elapsedPercent}%`,
+              backgroundColor:
+                cert.validityStatus === 'expired'
+                  ? 'hsl(var(--destructive))'
+                  : cert.validityStatus === 'expiring_soon'
+                  ? '#eab308'
+                  : '#22c55e',
+            }}
           />
         </div>
       </div>
 
-      {/* Security Assessment Grid */}
-      <div className="gcp-audit-grid">
-        <div className="gcp-audit-item">
-          <div className="gcp-audit-item-label">Key Spec Assessment</div>
-          <div className="gcp-audit-item-value">
-            <span className={`status-dot ${keyStrengthClass === 'badge-weak' ? 'dot-red' : 'dot-green'}`} />
+      {/* Audit Grid */}
+      <div className="audit-grid">
+        <div className="audit-item">
+          <div className="audit-item-label">Key Specification</div>
+          <div className="audit-item-value">
             <strong>{keyStrengthLabel}</strong>
           </div>
-          <p className="gcp-audit-item-hint">{keyStrengthDesc}</p>
+          <p className="audit-item-hint">{keyStrengthDesc}</p>
         </div>
 
-        <div className="gcp-audit-item">
-          <div className="gcp-audit-item-label">Signature Digest</div>
-          <div className="gcp-audit-item-value">
-            <span className={`status-dot ${sigStrengthClass === 'badge-weak' ? 'dot-red' : 'dot-green'}`} />
-            <code>{cert.signatureAlgorithm}</code>
+        <div className="audit-item">
+          <div className="audit-item-label">Signature Digest</div>
+          <div className="audit-item-value">
+            <span className={`badge ${sigStrengthBadge}`} style={{ fontSize: '0.6875rem' }}>
+              {cert.signatureAlgorithm}
+            </span>
           </div>
-          <p className="gcp-audit-item-hint">
-            {sigStrengthClass === 'badge-weak'
-              ? 'WARNING: Digest algorithm is vulnerable to collision attacks.'
-              : 'Digest meets current PKI standards.'}
+          <p className="audit-item-hint">
+            {sigStrengthBadge === 'badge-destructive'
+              ? 'Warning: Deprecated hash vulnerable to collision attacks.'
+              : 'Meets current PKI digital signature standards.'}
           </p>
         </div>
 
-        <div className="gcp-audit-item">
-          <div className="gcp-audit-item-label">CA Role & Constraints</div>
-          <div className="gcp-audit-item-value">
-            <CheckCircle2 size={13} color="var(--gcp-green)" />
+        <div className="audit-item">
+          <div className="audit-item-label">CA Role & Constraints</div>
+          <div className="audit-item-value" style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <CheckCircle2 size={13} color="#22c55e" />
             <span>{cert.isCA ? 'Certificate Authority (CA)' : 'End-Entity / Server Leaf'}</span>
           </div>
-          <p className="gcp-audit-item-hint">
+          <p className="audit-item-hint">
             {cert.isCA ? 'Authorized to sign subordinate certificates.' : 'Intended for TLS endpoint / client identity.'}
           </p>
         </div>
 
-        <div className="gcp-audit-item">
-          <div className="gcp-audit-item-label">SAN Coverage</div>
-          <div className="gcp-audit-item-value">
+        <div className="audit-item">
+          <div className="audit-item-label">SAN Coverage</div>
+          <div className="audit-item-value">
             {cert.sans.length > 0 ? (
-              <span>{cert.sans.length} Subject Alternative Name(s)</span>
+              <span>{cert.sans.length} SAN domain(s)</span>
             ) : (
-              <span style={{ color: 'var(--gcp-yellow)' }}>No SANs defined (Legacy CN only)</span>
+              <span style={{ color: '#eab308' }}>No SANs (Legacy CN only)</span>
             )}
           </div>
-          <p className="gcp-audit-item-hint">
+          <p className="audit-item-hint">
             {cert.sans.length > 0
-              ? 'Modern browsers validate SAN entries for TLS hostname verification.'
+              ? 'Modern browsers require SAN for TLS hostname verification.'
               : 'RFC 6125 deprecates checking Common Name without SANs.'}
           </p>
         </div>
